@@ -1,0 +1,18 @@
+<<<driver program>>>
+start
+	declare v_1_2_3:integer;
+	get_value(v_1_2_3);
+	declare result_:integer;
+	[result_]:=use module square with parameters v_1_2_3;
+	print(result);
+end
+
+<<module square>>
+takes input [x:integer];
+returns [value:integer];
+start
+	value:= x*x;
+end
+
+
+

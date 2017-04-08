@@ -1,0 +1,51 @@
+moduleDeclarations EPSILON DECLARE .
+moduleDeclaration DECLARE .
+otherModules EPSILON DEF .
+driverModule DRIVERDEF .
+module DEF . 
+ret RETURNS EPSILON .
+input_plist ID .
+IP_List COMMA EPSILON .
+output_plist ID .
+OP_List COMMA EPSILON .
+dataType INTEGER REAL BOOLEAN ARRAY .
+type INTEGER REAL BOOLEAN .
+moduleDef START .
+statements EPSILON GET_VALUE PRINT DECLARE FOR WHILE ID USE SQBO SWITCH .
+ioStmt GET_VALUE PRINT .
+var ID NUM RNUM .
+whichId SQBO EPSILON .
+assignmentStmt ID .
+lvalueIDStmt ASSIGNOP .
+lvalueARRStmt SQBO .
+index NUM ID .
+moduleReuseStmt USE SQBO .
+optional SQBO EPSILON . 
+idList ID .
+N3 COMMA EPSILON .
+expression MINUS BO ID NUM RNUM .
+arithmeticOrBooleanExpr BO ID NUM RNUM .
+N7 EPSILON AND OR .
+N8 EPSILON LT LE GT GE EQ NE .
+N4 EPSILON PLUS MINUS .
+N5 EPSILON MUL DIV .
+op1 PLUS MINUS .
+op2 MUL DIV .
+logicalOp AND OR .
+relationalOp LT LE GT GE EQ NE .
+declareStmt DECLARE .
+conditionalStmt SWITCH .
+caseStmts CASE .
+N9 CASE EPSILON .
+value NUM TRUE FALSE .
+default DEFAULT EPSILON .
+iterativeStmt FOR WHILE .
+range NUM .
+statement GET_VALUE PRINT DECLARE FOR WHILE ID USE SQBO EPSILON SWITCH .
+simpleStmt ID USE SQBO .
+whichStmt ASSIGNOP SQBO .
+factor ID NUM RNUM .
+program DECLARE DRIVERDEF DEF .
+term ID NUM RNUM .
+arithmeticExpr ID NUM RNUM .
+AnyTerm ID NUM RNUM .
