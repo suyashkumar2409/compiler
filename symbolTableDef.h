@@ -1,8 +1,8 @@
 #include "lexer.c"
 
-typedef enum{
-	defined, assigned
-} statusEnum
+// typedef enum{
+// 	defined, assigned
+// } statusEnum
 
 struct variableStruct{
 	allEnum type;
@@ -20,6 +20,8 @@ typedef struct {
 	int isVariable;
 	int width;
 	int result;
+	int isDeclared;
+	int isAssigned;
 }idVar;
 
 
@@ -52,7 +54,9 @@ typedef struct argumentNode argument;
 
 typedef struct 
 {
-	int used;
+	int isUsed;
+	int isDeclared;
+	int isDefined;
 	argument* argumentHead;
 	argument* argumentTail;
 }idFunction;
@@ -64,7 +68,7 @@ struct idNodeStruct
 	char ID[10];
 	int scope;
 	int lineNo;
-	statusEnum status;
+	// statusEnum status;
 
 
 	int isVar;
