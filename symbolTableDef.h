@@ -33,8 +33,8 @@ struct scopeNodeStruct{
 	struct scopeNodeStruct * siblingPrev;
 
 	struct scopeNodeStruct * parent;
-	struct scopeNodeStruct * childStart;
-	struct scopeNodeStruct * childEnd;
+	struct scopeNodeStruct * childListStart;
+	struct scopeNodeStruct * childListEnd;
 };
 
 typedef struct scopeNodeStruct scopeNode;
@@ -46,6 +46,9 @@ struct argumentNode{
 	int isVariable;
 
 	struct argumentNode* next;
+	struct argumentNode* prev;
+
+	char ID[10];
 };
 
 
@@ -57,8 +60,8 @@ typedef struct
 	int isUsed;
 	int isDeclared;
 	int isDefined;
-	argument* argumentHead;
-	argument* argumentTail;
+	argument* inputArgument;
+	argument* outputArgument;
 }idFunction;
 	
 	
