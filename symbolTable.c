@@ -241,13 +241,12 @@ void analyseIO(TreeNode* list)
 	return analyseInput(list);
 }
 
-void populateSymbolTable(TreeNode* root)
+void populateSymbolTableFunction(TreeNode* root)
 {
 	if(root!=NULL)
 	{
 		switch(root->allenum)
 		{
-
 			//Function Declaration
 			case nt_moduleDeclaration:
 				
@@ -304,7 +303,7 @@ void populateSymbolTable(TreeNode* root)
 				insert(symbolFunction, newSymbolNode);
 
 				//for moduleDef
-				populateSymbolTable(root->childListEnd);
+				// populateSymbolTable(root->childListEnd);
 				break;
 
 			// ******* Add case for moduledef and check for function invocations
@@ -322,9 +321,102 @@ void populateSymbolTable(TreeNode* root)
 	}
 }
 
+
+
+void populateSymbolTableID(TreeNode* root)
+{
+	if(root!=NULL)
+	{
+		switch(root->allenum)
+		{
+			case nt_moduleDef:
+				//increase scope, set not in loop or switch
+				//populate with statements node
+
+			/*************** IO statement ************************/
+			case nt_ioStmt:
+				//check if GET_VALUE - check whether ID is present in scope
+
+				//check if PRINT - run recursively for var
+
+			case nt_var:
+				// if NUM or RNUM, no problem
+				//if ID, check ID, run recursively for whichID
+
+			case nt_whichID:
+				//if e, no problem
+				//if sqbo, check ID
+
+			/*************** Simple statement **********************/
+			case nt_assignmentStmt:
+				//check ID
+				//recursively run which stmt
+
+			case nt_lvalueIDStmt:
+				//recursively run expression
+
+			case nt_lvalueARRStmt:
+				//recursively run index1 and expression
+
+			case nt_index:
+				//if num, no problem, if ID, check ID
+
+			case expression:
+				/****************** THIS IS LONG DO IT LATER *************************/
+
+			/******************* declare statement ***********************/
+			case nt_declareStmt:
+				// for each ID in idlist, first check whether it already exists
+
+				// for each ID in idList, insert in hashtable using datatype - handle both arrays and normal nums (is bound checking done?)
+
+
+			/******************* conditional statement ********************/
+			case nt_conditionalStmt:
+				// check ID in switch
+				//recursively analyse case statements and default
+
+			case nt_caseStmts:
+				//increase scope
+				//recursively add statements
+				//recursively add N9
+
+			case nt_N9: //multicase
+				//increase scope if not epsilon
+				//recursively add statements and N9 if not epsilon
+
+
+			case nt_default:
+				//increase scope if not epsilon
+				//recursively add statements if not epsilon
+
+
+
+			default:
+				TreeNode* ptr = root->childListStart;
+
+					// should this really be global instead of default?
+				while(ptr!=NULL)
+				{
+					populateSymbolTable(ptr);
+					ptr = ptr->siblingNext;
+				}
+
+				break;
+		}
+
+		
+	}
+
+
+}
+
+
 void mainOfSymbolTable()
 {
 	createHashTables();
-	populateSymbolTable(parserTree);
 	createScopeTree();
+
+	populateSymbolTableID(parserTree);
+	populateSymbolTableFunction(parserTree);
 }
