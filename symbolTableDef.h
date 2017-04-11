@@ -1,4 +1,4 @@
-#include "lexer.c"
+#include "actualParsing.c"
 
 // typedef enum{
 // 	defined, assigned

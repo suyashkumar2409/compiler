@@ -398,13 +398,13 @@ void printInorder(TreeNode* parent, FILE * filePtrTree)
 	// }
 }
 
-int main()
-{
-	mainOfLexer("testcase2.txt");
-	parsing()	;
-	FILE* fopenParseTree;
-	fopenParseTree = fopen("outfile.txt", "w+");
-	printInorder(parserTree, fopenParseTree);
+// int main()
+// {
+// 	mainOfLexer("testcase2.txt");
+// 	parsing()	;
+// 	FILE* fopenParseTree;
+// 	fopenParseTree = fopen("outfile.txt", "w+");
+// 	printInorder(parserTree, fopenParseTree);
 
 
-}
+// }
