@@ -325,7 +325,24 @@ void populateSymbolTableFunction(TreeNode* root)
 	}
 }
 
+int checkIdInScope(idNode** hashtable, char * identifier, scopeNode* currentScopeNode)
+{
+	while(currentScopeNode!=NULL)
+	{
+		idNode* getVal = retrieve(hashtable, identifier, currentScopeNode->scope, hashFunctionSize);
 
+		if(getVal != NULL)
+		{
+			return 1;
+		}
+		else
+		{
+			currentScopeNode = currentScopeNode->parent;
+		}
+	}
+
+	return 0;
+}
 
 void populateSymbolTableID(TreeNode* root)
 {
@@ -350,50 +367,112 @@ void populateSymbolTableID(TreeNode* root)
 				//exit scope
 				current_scope = current_scope - 1;
 				currentScopeNode = currentScopeNode->parent;
+
+
+				break;
 			/*************** IO statement ************************/
 			case nt_ioStmt:
 				//check if GET_VALUE - check whether ID is present in scope
 				if(root->childListStart->allenum == GET_VALUE)
 				{
 					TreeNode* idVal = root->childListStart->siblingNext->siblingNext;
-					idNode* getNode = retrieve(symbolId, idVal->tokenInfo->identifier, current_scope, hashFunctionSize);
-
-					if(getNode==NULL)
+					
+					if(!checkIdInScope(symbolId, idVal->tokenInfo->identifier, currentScopeNode))
 						printf("Error at line %d: %s is not in scope\n",idVal->tokenInfo->lineNo, idVal->tokenInfo->identifier );
 				
 				}
-				
+
 				//check if PRINT - run recursively for var
 				else
 				{
 					populateSymbolTableID(root->childListStart->siblingNext->siblingNext);
 				}
 
+
+				break;
+
+
 			case nt_var:
+				TreeNode* firstChild = root->childListStart;
 				// if NUM or RNUM, no problem
+				if(firstChild->allenum == NUM || firstChild->allenum == RNUM)
+					; //no problem
+
 				//if ID, check ID, run recursively for whichID
+				else
+				{
+					if(!checkIdInScope(symbolId, firstChild->tokenInfo->identifier, currentScopeNode))
+						printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo->lineNo, firstChild->tokenInfo->identifier );
+				
+					populateSymbolTableID(firstChild->siblingNext);
+				}
+
+				break;
 
 			case nt_whichID:
 				//if e, no problem
+				TreeNode* firstChild = root->childListStart;
+
+				if(firstChild->allenum == EPSILON)
+					;
+				else
 				//if sqbo, check ID
+				{
+					if(!checkIdInScope(symbolId, firstChild->siblingNext->tokenInfo->identifier, currentScopeNode))
+						printf("Error at line %d: %s is not in scope\n",firstChild->siblingNext->tokenInfo->lineNo, firstChild->siblingNext->tokenInfo->identifier );
+					
+				}
+
+				break;
 
 			/*************** Simple statement **********************/
 			case nt_assignmentStmt:
 				//check ID
-				//recursively run which stmt
+				TreeNode* firstChild = root->childListStart;
+				if(!checkIdInScope(symbolId, firstChild->tokenInfo->identifier, currentScopeNode))
+					printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo->lineNo, firstChild->tokenInfo->identifier );
+
+				//recursively run which stmt				
+				populateSymbolTableID(firstChild->siblingNext);
+				
+				break;
 
 			case nt_lvalueIDStmt:
 				//recursively run expression
+				populateSymbolTableID(root->childListStart->siblingNext);
+
+				break;
 
 			case nt_lvalueARRStmt:
-				//recursively run index1 and expression
+				//recursively run index and expression
+				//index
+				populateSymbolTableID(root->childListStart->siblingNext);
 
+				//expression
+				populateSymbolTableID(root->childListStart->siblingNext->siblingNext->siblingNext->siblingNext);
+
+				break;
 			case nt_index:
 				//if num, no problem, if ID, check ID
+				TreeNode* firstChild = root->childListStart;
+
+				if(firstChild->allenum == NUM)
+					;
+				else
+				//check ID
+				{
+					if(!checkIdInScope(symbolId, firstChild->tokenInfo->identifier, currentScopeNode))
+						printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo->lineNo, firstChild->tokenInfo->identifier );
+					
+				}
+
+				break;
 
 			case expression:
 				/****************** THIS IS LONG DO IT LATER *************************/
 
+
+			//*********** ALSO ANALYSE MODULE REUSE STATEMENT ***************
 			/******************* declare statement ***********************/
 			case nt_declareStmt:
 				// for each ID in idlist, first check whether it already exists
