@@ -913,6 +913,8 @@ void mainOfLexer(char* filename)
 {
 	// initialise(filename);
 	runTokenizer(filename);
+	printLinkedList();
+	
 }
 
 // int main()

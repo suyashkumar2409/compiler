@@ -84,7 +84,7 @@ void parsing()
 		RuleNode topRule = topNode->ruleNode;
 
 		// printStack();printf
-		printf("yo%s\n",TerminalsAndNonTerminalsList[topRule.allenum]);
+		// printf("yo%s\n",TerminalsAndNonTerminalsList[topRule.allenum]);
 		// TokenInfo* lookAhead = topNode->tokenInfo;
 
 		//if stack shows $
@@ -398,13 +398,13 @@ void printInorder(TreeNode* parent, FILE * filePtrTree)
 	// }
 }
 
-// int main()
-// {
-// 	mainOfLexer("testcase1.txt");
-// 	parsing()	;
-// 	FILE* fopenParseTree;
-// 	fopenParseTree = fopen("outfile.txt", "w+");
-// 	printInorder(parserTree, fopenParseTree);
+int main()
+{
+	mainOfLexer("testcase2.txt");
+	parsing()	;
+	FILE* fopenParseTree;
+	fopenParseTree = fopen("outfile.txt", "w+");
+	printInorder(parserTree, fopenParseTree);
 
 
-// }
+}

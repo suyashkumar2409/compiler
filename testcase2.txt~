@@ -1,3 +1,4 @@
+declare module compute;
 <<<driver program>>>
 start
 	b:= (a + a)*12;
