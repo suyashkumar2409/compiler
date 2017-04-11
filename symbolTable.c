@@ -68,7 +68,7 @@ void createHashTables()
 	symbolFunction = initHashFunc(hashFunctionSize);
 }
 
-idVar createNewID();            //Implement this;
+
 
 idFunction createNewDeclaredFunction()
 {
@@ -351,9 +351,108 @@ int checkExistenceIDLIST(idNode** hashtable, TreeNode* list, int scope)
 
 	int allCorrect = 1;
 
-retrieve(idNode** hashTable, char* id, int scope, int size)
-	if(retrieve)
+
+	if(retrieve(hashTable, first->tokenInfo->identifier, scope, hashFunctionSize) == NULL)
+	{
+		allCorrect = 0;
+		printf("Error at line %d: %s is not in scope\n",first->tokenInfo->lineNo, first->tokenInfo->identifier );
+	}
+
+	while(n3->childListStart->allenum != EPSILON)
+	{
+		first = n3->childListStart->siblingNext;
+
+		if(retrieve(hashTable, first->tokenInfo->identifier, scope, hashFunctionSize) == NULL)
+		{
+			allCorrect = 0;
+			printf("Error at line %d: %s is not in scope\n",first->tokenInfo->lineNo, first->tokenInfo->identifier );
+		}
+		n3 = n3->childListEnd;
+	}
+
+	return allCorrect;
 }
+
+idNode* createNewIDVar(char * identifier, int scope, int lineNo, allenum datatype)
+{
+	idNode* newNode = (idNode*)malloc(sizeof(idNode));
+	strcpy(newNode->ID, identifier);
+
+	newNode->scope = scope;
+	newNode->lineNo = lineNo;
+
+	newNode->isVar = 1;
+
+	idVar var;
+
+	var.variable.allenum = datatype;
+	var.isVariable = 1;
+	var.isDeclared  =1;
+	var.isAssigned = 0;
+
+	newNode->var = var;
+
+	return newNode;
+}
+
+idNode* createNewIDArray(char * identifier, int scope, int lineNo, TreeNode* datatype)
+{
+	idNode* newNode = (idNode*)malloc(sizeof(idNode));
+	strcpy(newNode->ID, identifier);
+
+	newNode->scope = scope;
+	newNode->lineNo = lineNo;
+
+	newNode->isVar = 0;
+
+	idVar var;
+
+	TreeNode* range = datatype->childListStart->siblingNext->siblingNext;
+
+	var.array.type = datatype->childListEnd->childListStart->tokenInfo->allenum;
+	var.array.rangeStart = range->childListStart->tokenInfo->integer;
+	var.array.rangeEnd = range->childListStartEnd->tokenInfo->integer;
+
+	var.isVariable = 0;
+	var.isDeclared  =1;
+	var.isAssigned = 0;
+
+	newNode->var = var;
+
+	return newNode;
+}
+
+void insertSingleIDHash(idNode** hashtable,TreeNode* id,TreeNode* datatype, int scope)
+{
+	if(datatype->childListStart->allenum == ARRAY)
+	{
+		idNode* newIdNode = createNewIDArray(id->tokenInfo->identifier, scope, id->tokenInfo->lineNo, datatype)
+		
+		insert(hashtable, newIdNode, hashFunctionSize);	
+	}
+	else
+	{
+		idNode* newIdNode = createNewIDNode(id->tokenInfo->identifier, scope, id->tokenInfo->lineNo, datatype->tokenInfo->allenum);
+		
+		insert(hashtable, newIdNode, hashFunctionSize);
+	}
+}
+
+// for each ID in idList, insert in hashtable using datatype - handle both arrays and normal nums (is bound checking done?)
+void insertIDLISTHash(idNode** hashtable,TreeNode* list,TreeNode* datatype, int scope)
+{
+	TreeNode* first = list->childListStart;
+	TreeNode* n3  = list->childListEnd;
+
+	insertSingleIDHash(hashtable, first, datatype, scope);
+
+	while(n3->childListStart->allenum != EPSILON)
+	{
+		first = n3->childListStart->siblingNext;
+		insertSingleIDHash(hashtable, first, datatype, scope);
+		n3 = n3->childListEnd;
+	}
+}	
 
 void populateSymbolTableID(TreeNode* root)
 {
@@ -589,7 +688,7 @@ void populateSymbolTableID(TreeNode* root)
 				if(checkExistenceIDLIST(symbolId, firstChild, currentScopeNode->scope))  //check only in current scope
 				{
 				// for each ID in idList, insert in hashtable using datatype - handle both arrays and normal nums (is bound checking done?)
-					insertIDLISTHash(symbolId, firstChild, firstChild->siblingNext->siblingNext, currentScopeNode);					
+					insertIDLISTHash(symbolId, firstChild, firstChild->siblingNext->siblingNext, currentScopeNode->scope);					
 				}
 
 
@@ -701,5 +800,12 @@ void mainOfSymbolTable()
 	createScopeTree();
 
 	populateSymbolTableID(parserTree);
-	populateSymbolTableFunction(parserTree);
+	// populateSymbolTableFunction(parserTree);
+}
+
+int main()
+{
+	mainOfLexer("testcase1.txt");
+	parsing();
+	mainOfSymbolTable();
 }
