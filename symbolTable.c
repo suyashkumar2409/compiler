@@ -483,22 +483,87 @@ void populateSymbolTableID(TreeNode* root)
 			/******************* conditional statement ********************/
 			case nt_conditionalStmt:
 				// check ID in switch
-				//recursively analyse case statements and default
+				TreeNode* idVal = root->childListStart->siblingNext->siblingNext;
+				if(!checkIdInScope(symbolId, idVal->tokenInfo->identifier, currentScopeNode))
+					printf("Error at line %d: %s is not in scope\n",idVal->tokenInfo->lineNo, idVal->tokenInfo->identifier );
+					
+				//recursively analyse case statements 
+				populateSymbolTableID(idVal->siblingNext->siblingNext->siblingNext);
+
+				//and default
+				populateSymbolTableID(root->childListEnd->siblingPrev);
+
+				break;
 
 			case nt_caseStmts:
 				//increase scope
+				current_scope = current_scope + 1;
+				scopeNode* newNode = newScopeNode(current_scope, 1, 0);
+				addChild(currentScopeNode, scopeNode);
+				currentScopeNode = scopeNode;
+
+				//recursively for statements
+				populateSymbolTableID(root->childListStart->siblingNext->siblingNext->siblingNext);
+
+
 				//recursively add statements
+
+
+				//exit scope
+				current_scope = current_scope - 1;
+				currentScopeNode = currentScopeNode->parent;
+
 				//recursively add N9
+				populateSymbolTableID(root->childListEnd);
+
+				break;
 
 			case nt_N9: //multicase
+				if(root->childListStart->allenum == EPSILON)
+					;
+				else
+				{
 				//increase scope if not epsilon
-				//recursively add statements and N9 if not epsilon
+					current_scope = current_scope + 1;
+					scopeNode* newNode = newScopeNode(current_scope, 1, 0);
+					addChild(currentScopeNode, scopeNode);
+					currentScopeNode = scopeNode;
 
+				//recursively for statements
+					populateSymbolTableID(root->childListStart->siblingNext->siblingNext->siblingNext);
 
+				//exit scope
+				current_scope = current_scope - 1;
+				currentScopeNode = currentScopeNode->parent;
+
+				//recursively add N9
+				populateSymbolTableID(root->childListEnd);
+
+				}
+				
+				break;
 			case nt_default:
 				//increase scope if not epsilon
 				//recursively add statements if not epsilon
+				if(root->childListStart->allenum == EPSILON)
+					;
+				else
+				{
+				//increase scope if not epsilon
+					current_scope = current_scope + 1;
+					scopeNode* newNode = newScopeNode(current_scope, 1, 0);
+					addChild(currentScopeNode, scopeNode);
+					currentScopeNode = scopeNode;
 
+				//recursively for statements
+					populateSymbolTableID(root->childListStart->siblingNext->siblingNext);
+
+				//exit scope
+				current_scope = current_scope - 1;
+				currentScopeNode = currentScopeNode->parent;
+				}
+				
+				break;
 
 
 			default:
