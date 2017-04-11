@@ -5,6 +5,8 @@
 #define hashIdSize 1017
 #define hashFunctionSize 1017
 
+//convert single big symbol table to hierarchial table
+//no need to do above, just add scope into search function
 idNode** symbolId;
 idNode** symbolFunction;
 
@@ -12,6 +14,7 @@ int global_scope = 0;
 int current_scope = global_scope;
 
 scopeNode* scopeTree = NULL;
+scopeNode* currentScopeNode = NULL;
 	int scope;
 	int isSwitch;
 	int isLoop;
@@ -26,9 +29,9 @@ scopeNode* newScopeNode(int scope, int isSwitch, int isLoop)
 {
 	scopeNode* scopeTree = (scopeNode*)malloc(sizeof(scopeNode));
 
-	scopeTree->scope = global_scope;
-	scopeTree->isSwitch = 0;
-	scopeTree->isLoop = 0;
+	scopeTree->scope = scope;
+	scopeTree->isSwitch = isSwitch;
+	scopeTree->isLoop = isLoop;
 
 	return scopeTree;
 }
@@ -56,6 +59,7 @@ void addChild(scopeNode* parent, scopeNode* child)
 void createScopeTree()
 {
 	scopeTree = newScopeNode(global_scope, 0, 0);	
+	currentScopeNode = scopeTree;
 }
 
 void createHashTables()
@@ -332,12 +336,38 @@ void populateSymbolTableID(TreeNode* root)
 			case nt_moduleDef:
 				//increase scope, set not in loop or switch
 				//populate with statements node
+				//exit scope
 
+				//scope increased
+				current_scope = current_scope + 1;
+				scopeNode* newNode = newScopeNode(current_scope, 0, 0);
+				addChild(currentScopeNode, scopeNode);
+				currentScopeNode = scopeNode;
+
+				//recursively for statements
+				populateSymbolTableID(root->childListStart->siblingNext);
+
+				//exit scope
+				current_scope = current_scope - 1;
+				currentScopeNode = currentScopeNode->parent;
 			/*************** IO statement ************************/
 			case nt_ioStmt:
 				//check if GET_VALUE - check whether ID is present in scope
+				if(root->childListStart->allenum == GET_VALUE)
+				{
+					TreeNode* idVal = root->childListStart->siblingNext->siblingNext;
+					idNode* getNode = retrieve(symbolId, idVal->tokenInfo->identifier, current_scope, hashFunctionSize);
 
+					if(getNode==NULL)
+						printf("Error at line %d: %s is not in scope\n",idVal->tokenInfo->lineNo, idVal->tokenInfo->identifier );
+				
+				}
+				
 				//check if PRINT - run recursively for var
+				else
+				{
+					populateSymbolTableID(root->childListStart->siblingNext->siblingNext);
+				}
 
 			case nt_var:
 				// if NUM or RNUM, no problem

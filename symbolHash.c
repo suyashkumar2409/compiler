@@ -53,14 +53,14 @@ void insert(idNode** hashTable, idNode* id, int size)
 }
 
 //NULL means not found
-idNode* retrieve(idNode** hashTable, char* id, int size)
+idNode* retrieve(idNode** hashTable, char* id, int scope, int size)
 {
 	int hash = getHash(id->ID, size);
 	idNode* ptr = hashTable[hash]->next;
 
 	while(ptr!=NULL)
 	{
-		if(!strcmp(ptr->ID, id))
+		if(strcmp(ptr->ID, id)!=0 && ptr->scope == scope)
 			break;
 
 		ptr = ptr->next;
