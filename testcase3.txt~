@@ -5,6 +5,5 @@ start
 	declare result_:integer;
 	[result_]:=use module square with parameters v_1_2_3;
 	print(result);
-	print(bak);
 end
 

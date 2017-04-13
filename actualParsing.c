@@ -60,6 +60,30 @@ void initialiseParserSuyash()
 // 	printInorder(parserTree, filePtrTree);
 // }
 
+
+void provideValues(TreeNode* root)
+{
+	if(root!=NULL)
+	{
+		TreeNode* child;
+		child = root->childListStart;
+		
+		provideValues(child);
+
+		root->allenum = root->ruleNode.allenum;
+
+		if(child!=NULL)
+			child = child->siblingNext;
+		
+		while(child!=NULL)
+		{
+			provideValues(child);
+			child = child->siblingNext;
+		}
+		
+	}
+}
+
 void printStack()
 {
 	TreeNode* bla = parserStack;
@@ -337,7 +361,9 @@ void parsing()
 	else
 	{
 		printf("Compilation Successful!");
-	}	
+	}
+
+	provideValues(parserTree);	
 }
 
 void printRule2(RuleNode ruleNode, TokenInfo tokenInfo,TreeNode* parent, FILE * filePtrTree,int isLeaf)
@@ -400,11 +426,12 @@ void printInorder(TreeNode* parent, FILE * filePtrTree)
 
 // int main()
 // {
-// 	mainOfLexer("testcase2.txt");
+// 	mainOfLexer("testcase3.txt");
 // 	parsing()	;
-// 	FILE* fopenParseTree;
-// 	fopenParseTree = fopen("outfile.txt", "w+");
-// 	printInorder(parserTree, fopenParseTree);
+
+// 	// FILE* fopenParseTree;
+// 	// fopenParseTree = fopen("outfile.txt", "w+");
+// 	// printInorder(parserTree, fopenParseTree);
 
 
 // }

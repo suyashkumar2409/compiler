@@ -186,7 +186,7 @@ void fillArgument(argument* tempNode, TreeNode* id, TreeNode* datatype)
 	{
 		tempNode->isVariable = 1;
 		struct variableStruct var;
-		var.allenum = datatype->childListStart->allenum;
+		var.type = datatype->childListStart->allenum;
 
 		tempNode->variable = var;
 		strcpy(tempNode->ID, id->tokenInfo.identifier);
@@ -219,90 +219,90 @@ argument* analyseInput(TreeNode* inputPlist)
 	return argumentHead;
 }
 
-void analyseIO(TreeNode* list)
+argument * analyseIO(TreeNode* list)
 {
 	return analyseInput(list);
 }
 
-void populateSymbolTableFunction(TreeNode* root)
-{
-	if(root!=NULL)
-	{
-		switch(root->allenum)
-		{
-			//Function Declaration
-			case nt_moduleDeclaration:
+// void populateSymbolTableFunction(TreeNode* root)
+// {
+// 	if(root!=NULL)
+// 	{
+// 		switch(root->allenum)
+// 		{
+// 			//Function Declaration
+// 			case nt_moduleDeclaration:
 				
-				//get name
-				char funcName[10];
+// 				//get name
+// 				char funcName[10];
 
-				TreeNode* funcIdNode = root->childListStart->siblingNext->siblingNext;
+// 				TreeNode* funcIdNode = root->childListStart->siblingNext->siblingNext;
 
-				strcpy(funcName, funcIdNode->tokenInfo.identifier);
+// 				strcpy(funcName, funcIdNode->tokenInfo.identifier);
 				
-				//get scope
-				int scope = current_scope;
+// 				//get scope
+// 				int scope = current_scope;
 
-				//get linenumber
-				int lineNo = funcIdNode->tokenInfo.lineNo;
+// 				//get linenumber
+// 				int lineNo = funcIdNode->tokenInfo.lineNo;
 
-				//get symbol table node
-				idNode* newSymbolNode = createNewFunctionDeclaration(funcName, scope,lineNo, 0, 1);
+// 				//get symbol table node
+// 				idNode* newSymbolNode = createNewFunctionDeclaration(funcName, scope,lineNo, 0, 1);
 				
-// ************* SEMANTIC ANALYSIS - CHECK WHETHER THIS DECLARATION IS ALREADY PRESENT 
-				insert(symbolFunction, newSymbolNode);
+// // ************* SEMANTIC ANALYSIS - CHECK WHETHER THIS DECLARATION IS ALREADY PRESENT 
+// 				insert(symbolFunction, newSymbolNode);
 
 
 
-				break;
+// 				break;
 
-			case nt_module: //********** IMPORTANT - ID names integrity has not been checked(same arguments), do in ID analysis
-
-
-				//get name
-				char funcName[10];
-
-				TreeNode* funcIdNode = root->childListStart->siblingNext->siblingNext;
-
-				strcpy(funcName, funcIdNode->tokenInfo.identifier);
+// 			case nt_module: //********** IMPORTANT - ID names integrity has not been checked(same arguments), do in ID analysis
 
 
-				//get scope
-				int scope = current_scope;
+// 				//get name
+// 				char funcName[10];
 
-				//get linenumber
-				int lineNo = funcIdNode->tokenInfo.lineNo;
+// 				TreeNode* funcIdNode = root->childListStart->siblingNext->siblingNext;
 
-				//analyses input_plist
-				argument* inputArgument = analyseIO(funcIdNode->siblingNext->siblingNext->siblingNext->siblingNext->siblingNext);
+// 				strcpy(funcName, funcIdNode->tokenInfo.identifier);
+
+
+// 				//get scope
+// 				int scope = current_scope;
+
+// 				//get linenumber
+// 				int lineNo = funcIdNode->tokenInfo.lineNo;
+
+// 				//analyses input_plist
+// 				argument* inputArgument = analyseIO(funcIdNode->siblingNext->siblingNext->siblingNext->siblingNext->siblingNext);
 				
-				TreeNode* ret = root->childListEnd->siblingPrev;
+// 				TreeNode* ret = root->childListEnd->siblingPrev;
 
-				argument* outputArgument = analyseIO(ret->childListStart->siblingNext->siblingNext);
+// 				argument* outputArgument = analyseIO(ret->childListStart->siblingNext->siblingNext);
 
-				idNode* newSymbolNode = createNewFunctionDefinition(funcName, scope, lineNo, inputArgument, outputArgument);
+// 				idNode* newSymbolNode = createNewFunctionDefinition(funcName, scope, lineNo, inputArgument, outputArgument);
 
-// ************** SEMANTIC ANALYSIS - CHECK WHETHER THIS DEFINITION IS ALREADY PRESENT 
-				insert(symbolFunction, newSymbolNode);
+// // ************** SEMANTIC ANALYSIS - CHECK WHETHER THIS DEFINITION IS ALREADY PRESENT 
+// 				insert(symbolFunction, newSymbolNode);
 
-				//for moduleDef
-				// populateSymbolTable(root->childListEnd);
-				break;
+// 				//for moduleDef
+// 				// populateSymbolTable(root->childListEnd);
+// 				break;
 
-			// ******* Add case for moduledef and check for function invocations
+// 			// ******* Add case for moduledef and check for function invocations
 
-		}
+// 		}
 
-		TreeNode* ptr = root->childListStart;
+// 		TreeNode* ptr = root->childListStart;
 
-// should this really be global instead of default?
-		while(ptr!=NULL)
-		{
-			populateSymbolTable(ptr);
-			ptr = ptr->siblingNext;
-		}
-	}
-}
+// // should this really be global instead of default?
+// 		while(ptr!=NULL)
+// 		{
+// 			populateSymbolTable(ptr);
+// 			ptr = ptr->siblingNext;
+// 		}
+// 	}
+// }
 
 int checkIdInScope(idNode** hashtable, char * identifier, scopeNode* currentScopeNode)
 {
@@ -331,7 +331,7 @@ int checkExistenceIDLIST(idNode** hashtable, TreeNode* list, int scope)
 	int allCorrect = 1;
 
 
-	if(retrieve(hashTable, first->tokenInfo.identifier, scope, hashFunctionSize) == NULL)
+	if(retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize) == NULL)
 	{
 		allCorrect = 0;
 		printf("Error at line %d: %s is not in scope\n",first->tokenInfo.lineNo, first->tokenInfo.identifier );
@@ -341,7 +341,7 @@ int checkExistenceIDLIST(idNode** hashtable, TreeNode* list, int scope)
 	{
 		first = n3->childListStart->siblingNext;
 
-		if(retrieve(hashTable, first->tokenInfo.identifier, scope, hashFunctionSize) == NULL)
+		if(retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize) == NULL)
 		{
 			allCorrect = 0;
 			printf("Error at line %d: %s is not in scope\n",first->tokenInfo.lineNo, first->tokenInfo.identifier );
@@ -352,7 +352,7 @@ int checkExistenceIDLIST(idNode** hashtable, TreeNode* list, int scope)
 	return allCorrect;
 }
 
-idNode* createNewIDVar(char * identifier, int scope, int lineNo, allenum datatype)
+idNode* createNewIDVar(char * identifier, int scope, int lineNo, allEnum datatype)
 {
 	idNode* newNode = (idNode*)malloc(sizeof(idNode));
 	strcpy(newNode->ID, identifier);
@@ -364,7 +364,7 @@ idNode* createNewIDVar(char * identifier, int scope, int lineNo, allenum datatyp
 
 	idVar var;
 
-	var.variable.allenum = datatype;
+	var.variable.type = datatype;
 	var.isVariable = 1;
 	var.isDeclared  =1;
 	var.isAssigned = 0;
@@ -390,7 +390,7 @@ idNode* createNewIDArray(char * identifier, int scope, int lineNo, TreeNode* dat
 
 	var.array.type = datatype->childListEnd->childListStart->tokenInfo.allenum;
 	var.array.rangeStart = range->childListStart->tokenInfo.integer;
-	var.array.rangeEnd = range->childListStartEnd->tokenInfo.integer;
+	var.array.rangeEnd = range->childListEnd->tokenInfo.integer;
 
 	var.isVariable = 0;
 	var.isDeclared  =1;
@@ -405,13 +405,13 @@ void insertSingleIDHash(idNode** hashtable,TreeNode* id,TreeNode* datatype, int 
 {
 	if(datatype->childListStart->allenum == ARRAY)
 	{
-		idNode* newIdNode = createNewIDArray(id->tokenInfo.identifier, scope, id->tokenInfo.lineNo, datatype)
+		idNode* newIdNode = createNewIDArray(id->tokenInfo.identifier, scope, id->tokenInfo.lineNo, datatype);
 		
 		insert(hashtable, newIdNode, hashFunctionSize);	
 	}
 	else
 	{
-		idNode* newIdNode = createNewIDNode(id->tokenInfo.identifier, scope, id->tokenInfo.lineNo, datatype->tokenInfo.allenum);
+		idNode* newIdNode = createNewIDVar(id->tokenInfo.identifier, scope, id->tokenInfo.lineNo, datatype->tokenInfo.allenum);
 		
 		insert(hashtable, newIdNode, hashFunctionSize);
 	}
@@ -437,6 +437,7 @@ void populateSymbolTableID(TreeNode* root)
 {
 	if(root!=NULL)
 	{
+		printf("%s\n",TerminalsAndNonTerminalsList[root->allenum]);
 		switch(root->allenum)
 		{
 			case nt_moduleDef:
@@ -791,7 +792,7 @@ void populateSymbolTableID(TreeNode* root)
 
 				while(ptr!=NULL)
 				{
-					populateSymbolTable(ptr);
+					populateSymbolTableID(ptr);
 					ptr = ptr->siblingNext;
 				}
 
@@ -818,7 +819,14 @@ void mainOfSymbolTable()
 
 int main()
 {
-	mainOfLexer("testcase1.txt");
+	mainOfLexer("testcase3.txt");
 	parsing();
 	mainOfSymbolTable();
+
+	// idNode* temp = retrieve(symbolId, "bak", 1, hashFunctionSize);
+
+	// if(temp==NULL)
+	// 	printf("found");
+	// else
+	// 	printf("not found");
 }

@@ -36,6 +36,8 @@ void insert(idNode** hashTable, idNode* id, int size)
 {
 	int hash = getHash(id->ID, size);
 
+	printf("\nInsert Hash is %d\n",hash);
+
 	if(hashTable[hash]->next == NULL)
 	{
 		hashTable[hash]->next = id;
@@ -57,6 +59,8 @@ idNode* retrieve(idNode** hashTable, char* id, int scope, int size)
 {
 	int hash = getHash(id, size);
 	idNode* ptr = hashTable[hash]->next;
+
+	printf("\nRetrieve Hash is %d\n",hash);
 
 	while(ptr!=NULL)
 	{
