@@ -59,7 +59,7 @@ typedef struct tempTokenInfo TokenInfo;
 char keywordsList [][keywordLenMax] = {
 		"AND", "array", "boolean", "break", "case", "declare", "default", "driver", "end", "for", "get_value", 
 	"in", "input", "integer", "module", "of", "OR", "parameters", "print", "program", "real", "returns", "start", 
-	"switch", "takes", "use", "while", "with", "false", "true"
+	"switch", "takes", "use", "while", "with", "FALSE", "TRUE"
 };
 
 char TokenList [][keywordLenMax] = {
@@ -70,7 +70,7 @@ char TokenList [][keywordLenMax] = {
 char TerminalsList [][keywordLenMax] = {
 	"AND", "array", "boolean", "break", "case", "declare", "default", "driver", "end", "for", "get_value", 
 	"in", "input", "integer", "module", "of", "OR", "parameters", "print", "program", "real", "returns", "start", 
-	"switch", "takes", "use", "while", "with", "false", "true", 
+	"switch", "takes", "use", "while", "with", "FALSE", "TRUE", 
 
 	"PLUS", "MINUS", "MUL", "DIV", "LT", "LE", "GE", "GT", "EQ", "NE", 
 	"DRIVERDEF", "DEF", "DRIVERENDDEF", "ENDDEF",  "COLON", "RANGEOP", "SEMICOL", "COMMA", "ASSIGNOP", "SQBO", "SQBC", "BO", "BC", 

@@ -9,9 +9,8 @@ start
 	start
 		case TRUE:
 			b:=100;
-
-			print(sex);
 			break;
+			print(sex);
 		case FALSE:
 			b:= -100;
 			break;

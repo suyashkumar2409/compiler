@@ -208,23 +208,23 @@ void parsing()
 					if(lookAhead->type == 1) //lookahead is ID
 					{
 						printf("ERROR_5: The token ID for lexeme %s does not match at line %d.The expected token here is %s", lookAhead->identifier, 
-						 lookAhead->lineNo, TerminalsList[topRule.allenum]);
+						 lookAhead->lineNo, TerminalsAndNonTerminalsList[topRule.allenum]);
 					}
 					else if(lookAhead->type == 2) //lookahead is NUM
 					{
 						printf("ERROR_5: The token NUM for lexeme %d does not match at line %d.The expected token here is %s", lookAhead->integer, 
-						 lookAhead->lineNo, TerminalsList[topRule.allenum]);
+						 lookAhead->lineNo, TerminalsAndNonTerminalsList[topRule.allenum]);
 					}
 					else if(lookAhead->type == 3) //lookahead is RNUM
 					{
 						printf("ERROR_5: The token RNUM for lexeme %f does not match at line %d.The expected token here is %s", lookAhead->rnum, 
-						 lookAhead->lineNo, TerminalsList[topRule.allenum]);
+						 lookAhead->lineNo, TerminalsAndNonTerminalsList[topRule.allenum]);
 					}
 					else if(lookAhead->type == 4 || lookAhead->type==0) //lookahead is token or keyword
 					{
-						char * tmpUpper = uppercase(TerminalsList[lookAhead->allenum]);
-						printf("ERROR_5: The token %s for lexeme %s does not match at line %d.The expected token here is %s", tmpUpper,TerminalsList[lookAhead->allenum], 
-						 lookAhead->lineNo, TerminalsList[topRule.allenum]);
+						char * tmpUpper = uppercase(TerminalsAndNonTerminalsList[lookAhead->allenum]);
+						printf("ERROR_5: The token %s for lexeme %s does not match at line %d.The expected token here is %d", tmpUpper,TerminalsAndNonTerminalsList[lookAhead->allenum], 
+						 lookAhead->lineNo, TerminalsAndNonTerminalsList[topRule.allenum]);
 
 						free(tmpUpper);
 					}
@@ -324,23 +324,23 @@ void parsing()
 				if(lookAhead->type == 1) //lookahead is ID
 				{
 					printf("ERROR_5: The token ID for lexeme %s does not match at line %d.The expected token here is %s", lookAhead->identifier, 
-					 lookAhead->lineNo, TerminalsList[topRule.allenum]);
+					 lookAhead->lineNo, TerminalsAndNonTerminalsList[topRule.allenum]);
 				}
 				else if(lookAhead->type == 2) //lookahead is NUM
 				{
 					printf("ERROR_5: The token NUM for lexeme %d does not match at line %d.The expected token here is %s", lookAhead->integer, 
-					lookAhead->lineNo, TerminalsList[topRule.allenum]);
+					lookAhead->lineNo, TerminalsAndNonTerminalsList[topRule.allenum]);
 				}
 				else if(lookAhead->type == 3) //lookahead is RNUM
 				{
 					printf("ERROR_5: The token RNUM for lexeme %f does not match at line %d.The expected token here is %s", lookAhead->rnum, 
-					lookAhead->lineNo, TerminalsList[topRule.allenum]);
+					lookAhead->lineNo, TerminalsAndNonTerminalsList[topRule.allenum]);
 				}
 				else if(lookAhead->type == 4 || lookAhead->type==0) //lookahead is token or keyword
 				{
-					char * tmpUpper = uppercase(TerminalsList[lookAhead->allenum]);
-					printf("***ERROR_5: The token %s for lexeme %s does not match at line %d.The expected token here is %s", tmpUpper,TerminalsList[lookAhead->allenum], 
-					lookAhead->lineNo, TerminalsList[topRule.allenum]);
+					char * tmpUpper = uppercase(TerminalsAndNonTerminalsList[lookAhead->allenum]);
+					printf("***ERROR_5: The token %s for lexeme %s does not match at line %d.The expected token here is %s", tmpUpper,TerminalsAndNonTerminalsList[lookAhead->allenum], 
+					lookAhead->lineNo, TerminalsAndNonTerminalsList[topRule.allenum]);
 					free(tmpUpper);
 				}
 
@@ -384,8 +384,8 @@ void printRule2(RuleNode ruleNode, TokenInfo tokenInfo,TreeNode* parent, FILE * 
 				printf("RNUM %f leaf\n", tokenInfo.rnum);
 			else if(tokenInfo.type == 0 || tokenInfo.type == 4)
 			{
-				char * tempUpper = uppercase(TerminalsList[tokenInfo.allenum]);
-				printf("Keyword %s leaf\n",	TerminalsList[tokenInfo.allenum]);
+				char * tempUpper = uppercase(TerminalsAndNonTerminalsList[tokenInfo.allenum]);
+				printf("Keyword %s leaf\n",	TerminalsAndNonTerminalsList[tokenInfo.allenum]);
 
 				free(tempUpper);
 			}

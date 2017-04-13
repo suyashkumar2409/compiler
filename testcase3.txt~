@@ -1,9 +1,15 @@
 <<<driver program>>>
 start
-	declare v_1_2_3:integer;
-	get_value(v_1_2_3);
-	declare result_:integer;
-	[result_]:=use module square with parameters v_1_2_3;
-	print(result);
+declare a,b:integer;
+declare c:boolean;
+a:=21;
+b:=23;
+c:=(b-a>3);
+switch(c)
+start
+case TRUE: b:=100;
+break;
+case FALSE: b:= -100;
+break;
 end
-
+end

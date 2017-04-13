@@ -5,7 +5,7 @@
 #include "lexer.c"
 #define no_term 58
 #define no_nonterm 51
-#define no_rules 94
+#define no_rules 95
 
 int siddharthRan = 0;
 // typedef enum{

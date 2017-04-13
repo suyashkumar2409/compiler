@@ -330,21 +330,23 @@ int checkExistenceIDLIST(idNode** hashtable, TreeNode* list, int scope)
 
 	int allCorrect = 1;
 
+	idNode* temp = retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize);
 
-	if(retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize) == NULL)
+	if(temp != NULL)
 	{
 		allCorrect = 0;
-		printf("Error at line %d: %s is not in scope\n",first->tokenInfo.lineNo, first->tokenInfo.identifier );
+		printf("Error at line %d: %s has been redeclared, originally defined at line %d:\n",first->tokenInfo.lineNo, first->tokenInfo.identifier, temp->lineNo);
 	}
 
 	while(n3->childListStart->allenum != EPSILON)
 	{
 		first = n3->childListStart->siblingNext;
 
-		if(retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize) == NULL)
+		temp = retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize);
+		if(temp != NULL)
 		{
 			allCorrect = 0;
-			printf("Error at line %d: %s is not in scope\n",first->tokenInfo.lineNo, first->tokenInfo.identifier );
+			printf("Error at line %d: %s has been redeclared, originally defined at line %d:\n",first->tokenInfo.lineNo, first->tokenInfo.identifier, temp->lineNo);
 		}
 		n3 = n3->childListEnd;
 	}
@@ -437,7 +439,7 @@ void populateSymbolTableID(TreeNode* root)
 {
 	if(root!=NULL)
 	{
-		printf("%s\n",TerminalsAndNonTerminalsList[root->allenum]);
+		// printf("%s\n",TerminalsAndNonTerminalsList[root->allenum]);
 		switch(root->allenum)
 		{
 			case nt_moduleDef:
@@ -819,8 +821,12 @@ void mainOfSymbolTable()
 
 int main()
 {
-	mainOfLexer("testcase3.txt");
+	mainOfLexer("testcase5.txt");
 	parsing();
+
+	//  FILE* fopenParseTree;
+	// fopenParseTree = fopen("outfile.txt", "w+");
+	// printInorder(parserTree, fopenParseTree);
 	mainOfSymbolTable();
 
 	// idNode* temp = retrieve(symbolId, "bak", 1, hashFunctionSize);

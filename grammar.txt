@@ -53,6 +53,7 @@ N3 COMMA ID N3 .
 N3 EPSILON .
 expression arithmeticOrBooleanExpr .
 expression MINUS BO arithmeticExpr BC .
+expression MINUS arithmeticOrBooleanExpr .
 arithmeticOrBooleanExpr AnyTerm N7 .
 N7 logicalOp AnyTerm N7 .
 N7 EPSILON .
