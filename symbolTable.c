@@ -402,6 +402,11 @@ void populateSymbolTableID(TreeNode* root)
 
 				//get symbol table node
 				idNode* newSymbolNode = createNewFunctionDeclaration(funcName, scope,lineNo);
+
+				//only defined
+				newSymbolNode->fun.isDeclared = 0;
+				newSymbolNode->fun.isDefined = 1;
+				newSymbolNode->fun.isUsed = 0;
 				
 // ************* SEMANTIC ANALYSIS - CHECK WHETHER THIS DECLARATION IS ALREADY PRESENT 
 				insert(symbolFunction, newSymbolNode, hashFunctionSize);
@@ -446,10 +451,30 @@ void populateSymbolTableID(TreeNode* root)
 				//4. check output params
 
 				TreeNode* idVal = root->childListStart->siblingNext->siblingNext;
-				if(checkIdInScope(symbolFunction, idVal->tokenInfo.identifier, currentScopeNode)!=NULL)
-					printf("Error at line %d: %s function is being redefined\n",idVal->tokenInfo.lineNo, idVal->tokenInfo.identifier );
 
-				insert(symbolFunction, newSymbolNode, hashFunctionSize);
+				//check if it has been defined or declared
+
+				idNode* statusCheck = checkIdInScope(symbolFunction, idVal->tokenInfo.identifier, currentScopeNode);
+				if(statusCheck!=NULL)
+				{
+					// it is being redeclared
+					if(statusCheck->fun.isDeclared == 1)
+						printf("Error at line %d: %s function is being redefined\n",idVal->tokenInfo.lineNo, idVal->tokenInfo.identifier );
+					else//it has only been defined
+					{
+						// function has already been defined - entry exists in symbol table, just add argument info
+						statusCheck->fun.isDeclared = 1;
+						statusCheck->fun.inputArgument = inputArgument;
+						statusCheck->fun.outputArgument = outputArgument;
+
+					}
+				}
+				else
+				{	//neither declared nor defined
+					newSymbolNode->fun.isDeclared = 1;
+					insert(symbolFunction, newSymbolNode, hashFunctionSize);
+				}
+
 
 				checkAndAddInputList(symbolId, idVal->siblingNext->siblingNext->siblingNext->siblingNext->siblingNext, current_scope + 1);
 

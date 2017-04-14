@@ -1,12 +1,3 @@
-<<module mod1>>
-takes input [a:integer, b:integer];
-returns [ abc:real];
-start
-declare c:real;
-c:=10.4;
-x:=a+b-10;
-abc:=b/5+c;
-end
 
 <<<driver program>>>
 start
@@ -32,3 +23,15 @@ start
 	declare sex:real;
 	sex:= c;
 end
+
+<<module mod1>>
+takes input [a:integer, b:integer];
+returns [x:integer, abc:real];
+start
+declare c:real;
+c:=10.4;
+x:=a+b-10;
+abc:=b/5+c;
+end
+
+
