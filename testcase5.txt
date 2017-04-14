@@ -20,7 +20,17 @@ start
 	b:= 23;
 	c:= (b-a>3);
 	[x,abc] := use module mod1 with parameters a,b;
-	switch(c)
+
+	declare i,k,tempvar : integer;
+	declare arr1:array[1..10] of integer;
+	while(i<=k)
+	start
+		get_value(tempvar);
+		arr1[i]:=tempvar;
+		i:=i+1;
+		** the semantics of while needs an increment and will be taken care of at the second phase**
+	end
+switch(c)
 	start
 		case TRUE:
 			b:=100;

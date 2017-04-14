@@ -1,4 +1,15 @@
 
+<<module mod1>>
+takes input [a:integer, b:integer];
+returns [x:integer, abc:real];
+start
+declare c:real;
+c:=10.4;
+x:=a+b-10;
+abc:=b/5+c;
+end
+
+
 <<<driver program>>>
 start
 	declare a, b:integer;
@@ -9,7 +20,15 @@ start
 	b:= 23;
 	c:= (b-a>3);
 	[x,abc] := use module mod1 with parameters a,b;
-	switch(c)
+
+	while(i<=k)
+	start
+		get_value(tempvar);
+		arr1[i]:=tempvar;
+		i:=i+1;
+		** the semantics of while needs an increment and will be taken care of at the second phase**
+	end
+switch(c)
 	start
 		case TRUE:
 			b:=100;
@@ -23,15 +42,4 @@ start
 	declare sex:real;
 	sex:= c;
 end
-
-<<module mod1>>
-takes input [a:integer, b:integer];
-returns [x:integer, abc:real];
-start
-declare c:real;
-c:=10.4;
-x:=a+b-10;
-abc:=b/5+c;
-end
-
 

@@ -842,6 +842,51 @@ void populateSymbolTableID(TreeNode* root)
 				break;
 
 				}
+
+//************ Code up Iterative
+				case nt_iterativeStmt:
+				{
+					TreeNode* firstChild = root->childListStart;
+
+					if(firstChild->allenum == FOR)
+					{
+						TreeNode* idVal = firstChild->siblingNext->siblingNext;
+						if(checkIdInScope(symbolId, idVal->tokenInfo.identifier, currentScopeNode)==NULL)
+							printf("Error at line %d: %s is not in scope\n",idVal->tokenInfo.lineNo, idVal->tokenInfo.identifier );
+				
+						current_scope = current_scope + 1;
+						scopeNode* newNode = newScopeNode(current_scope, 0, 1);
+						addChildScope(currentScopeNode, newNode);
+						currentScopeNode = newNode;
+
+						//recursively for statements
+						populateSymbolTableID(root->childListEnd->siblingPrev);
+
+						//exit scope
+						currentScopeNode = currentScopeNode->parent;
+
+					}
+					else
+					{
+						populateSymbolTableID(root->childListStart->siblingNext->siblingNext);
+
+
+						current_scope = current_scope + 1;
+						scopeNode* newNode = newScopeNode(current_scope, 0, 1);
+						addChildScope(currentScopeNode, newNode);
+						currentScopeNode = newNode;
+
+						//recursively for statements
+						populateSymbolTableID(root->childListEnd->siblingPrev);
+
+						//exit scope
+						currentScopeNode = currentScopeNode->parent;
+					}
+
+					break;
+
+				}
+
 			default:
 				{
 
