@@ -3,6 +3,8 @@
 
 declare module readArr;
 <<module arraySum>>
+declare sk:integer;
+sk :=10;
 takes input[list:array[1..15] of real, n:integer];		    **scope: Nesting level 1; module: arraySum; lines: 8 to 57**
 returns  [sum:real];						    **scope: Nesting level 1; module: arraySum; lines: 8 to 57 **
 start
@@ -20,8 +22,7 @@ start
 			declare x,y: integer;			    **scope: Nesting level 3; module: arraySum; lines: 19 to 24 **
 			x :=y+3*index-32*5;			    **No type mismatch, variable index is visible here**
 			sum:= p+23.5;				    **ERROR_T: type mismatch of array and real operands of plus operator**
-declare sk:integer;
-sk :=10;
+
 			t := 3 OR y+23>=x AND 23.5<=newarr[sk];  **No type mismatch; t is visible here**
 		end
 		index:= 34-20*index+x-12;			    **ERROR_V: variable x not declared **

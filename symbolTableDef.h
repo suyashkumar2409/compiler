@@ -90,6 +90,8 @@ struct idNodeStruct
 	idFunction fun;	
 	struct idNodeStruct * next;
 	struct idNodeStruct * prev;
+
+	struct idNodeStruct * nextList;
 };
 
 typedef struct idNodeStruct idNode;

@@ -1,10 +1,13 @@
+declare module square;
+
 <<<driver program>>>
 start
 	declare v_1_2_3:integer;
 	get_value(v_1_2_3);
 	declare result_:integer;
+	declare a:array[1..10] of real;
 	[result_]:=use module square with parameters v_1_2_3;
-	print(result);
+	print(result_);
 end
 
 <<module square>>

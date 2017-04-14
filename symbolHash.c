@@ -32,7 +32,8 @@ int getHash(char * inp, int size)
 	return hash;
 }
 
-void insert(idNode** hashTable, idNode* id, int size)
+
+idNode* insert(idNode** hashTable, idNode* id, int size)
 {
 	int hash = getHash(id->ID, size);
 	// printf("\n Trying to nInsert %s scope: %d",id->ID,id->scope);
@@ -53,7 +54,19 @@ void insert(idNode** hashTable, idNode* id, int size)
 		hashTable[hash]->next = id;
 		id->prev = hashTable[hash];
 	}
+
 }
+
+idNode* insert2(idNode** hashTable, idNode* id, int size, idNode* endOfHash)
+{
+	insert(hashTable, id, size);
+	if(endOfHash != NULL)
+	{
+		endOfHash->nextList = id;
+	}
+	return id;
+}
+
 
 //NULL means not found
 idNode* retrieve(idNode** hashTable, char* id, int scope, int size)
