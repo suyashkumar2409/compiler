@@ -2,7 +2,7 @@
 // Suyash Kumar 2014A7PS053P
 // Siddharth Agarwal 2014A7PS025P
 #include <stdio.h>
-#define idLenMax 8
+#define idLenMax 10
 #define keywordLenMax 30
 #define keywordUniqueNum 30
 
@@ -44,7 +44,7 @@ struct tempTokenInfo{
 	//0 - keyword, 1 - identifier, 2 - integer, 3 - real num, 4 - symbol, 5 - epsilon
 	int type;
 	allEnum allenum;
-	char identifier[8];
+	char identifier[10];
 	int integer;
 	float rnum;
 	struct tempTokenInfo* next;

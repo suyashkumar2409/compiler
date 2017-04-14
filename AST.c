@@ -234,7 +234,7 @@ void printRule(RuleNode ruleNode, TokenInfo tokenInfo,TreeNode* parent, FILE * f
 			fprintf(filePtrTree, "%d %d NUM %d %s yes\n", tokenInfo.integer, tokenInfo.lineNo,
 			 tokenInfo.integer, parentSymbol);
 		else if(tokenInfo.type == 3)
-			fprintf(filePtrTree, "%f %d RNUM %d %s yes\n", tokenInfo.rnum, tokenInfo.lineNo,
+			fprintf(filePtrTree, "%f %d RNUM %f %s yes\n", tokenInfo.rnum, tokenInfo.lineNo,
 			 tokenInfo.rnum, parentSymbol);
 		else if(tokenInfo.type == 0 || tokenInfo.type == 4)
 		{

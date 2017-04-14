@@ -1,10 +1,23 @@
+<<module mod1>>
+takes input [a:integer, b:integer];
+returns [x:integer, abc:real];
+start
+declare c:real;
+c:=10.4;
+x:=a+b-10;
+abc:=b/5+c;
+end
+
 <<<driver program>>>
 start
 	declare a, b:integer;
+	declare x:integer;
+	declare abc:real;
 	declare c:boolean;
 	a:= 21;
 	b:= 23;
 	c:= (b-a>3);
+	[x,abc] := use module mod1 with parameters a,b;
 	switch(c)
 	start
 		case TRUE:

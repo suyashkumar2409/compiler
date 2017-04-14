@@ -223,7 +223,7 @@ void parsing()
 					else if(lookAhead->type == 4 || lookAhead->type==0) //lookahead is token or keyword
 					{
 						char * tmpUpper = uppercase(TerminalsAndNonTerminalsList[lookAhead->allenum]);
-						printf("ERROR_5: The token %s for lexeme %s does not match at line %d.The expected token here is %d", tmpUpper,TerminalsAndNonTerminalsList[lookAhead->allenum], 
+						printf("ERROR_5: The token %s for lexeme %s does not match at line %d.The expected token here is %s", tmpUpper,TerminalsAndNonTerminalsList[lookAhead->allenum], 
 						 lookAhead->lineNo, TerminalsAndNonTerminalsList[topRule.allenum]);
 
 						free(tmpUpper);

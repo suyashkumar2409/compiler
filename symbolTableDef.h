@@ -48,7 +48,7 @@ struct argumentNode{
 	struct argumentNode* next;
 	struct argumentNode* prev;
 
-	char ID[8];
+	char ID[10];
 };
 
 
@@ -68,7 +68,7 @@ typedef struct
 struct idNodeStruct
 {
 	//common fields
-	char ID[8];
+	char ID[10];
 	int scope;
 	int lineNo;
 	// statusEnum status;

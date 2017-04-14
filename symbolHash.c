@@ -66,6 +66,7 @@ idNode* retrieve(idNode** hashTable, char* id, int scope, int size)
 
 	while(ptr!=NULL)
 	{
+		
 		if(strcmp(ptr->ID, id)==0 && ptr->scope == scope)
 			break;
 
