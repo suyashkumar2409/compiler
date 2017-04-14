@@ -35,6 +35,12 @@ struct scopeNodeStruct{
 	struct scopeNodeStruct * parent;
 	struct scopeNodeStruct * childListStart;
 	struct scopeNodeStruct * childListEnd;
+
+	char scopeName[10];
+	int scopeStart;
+	int scopeEnd;
+
+	int nesting;
 };
 
 typedef struct scopeNodeStruct scopeNode;
@@ -72,7 +78,12 @@ struct idNodeStruct
 	int scope;
 	int lineNo;
 	// statusEnum status;
+	char scopeName[10];
+	int scopeStart;
+	int scopeEnd;
 
+	int nesting;
+	int offset;
 
 	int isVar;
 	idVar var;
