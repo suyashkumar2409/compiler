@@ -21,6 +21,8 @@ start
 	c:= (b-a>3);
 	[x,abc] := use module mod1 with parameters a,b;
 
+	declare i,k,tempvar : integer;
+	declare arr1:array[1..10] of integer;
 	while(i<=k)
 	start
 		get_value(tempvar);
@@ -32,7 +34,11 @@ switch(c)
 	start
 		case TRUE:
 			b:=100;
-
+			declare i:integer;
+			for(i in 1..10)
+			start
+				print(i);
+			end
 			print(sex);
 			break;
 		case FALSE:

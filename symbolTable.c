@@ -753,11 +753,19 @@ void populateSymbolTableID(TreeNode* root)
 				if(checkIdInScope(symbolId, idVal->tokenInfo.identifier, currentScopeNode)==NULL)
 					printf("Error at line %d: %s is not in scope\n",idVal->tokenInfo.lineNo, idVal->tokenInfo.identifier );
 					
+				current_scope = current_scope + 1;
+				scopeNode* newNode = newScopeNode(current_scope, 1, 0);
+				addChildScope(currentScopeNode, newNode);
+				currentScopeNode = newNode;
+
 				//recursively analyse case statements 
 				populateSymbolTableID(idVal->siblingNext->siblingNext->siblingNext);
 
 				//and default
 				populateSymbolTableID(root->childListEnd->siblingPrev);
+
+				currentScopeNode = currentScopeNode->parent;
+
 
 				break;
 
@@ -767,11 +775,7 @@ void populateSymbolTableID(TreeNode* root)
 				
 				{
 				//increase scope
-				current_scope = current_scope + 1;
-				scopeNode* newNode = newScopeNode(current_scope, 1, 0);
-				addChildScope(currentScopeNode, newNode);
-				currentScopeNode = newNode;
-
+				
 				//recursively for statements
 				populateSymbolTableID(root->childListStart->siblingNext->siblingNext->siblingNext);
 
@@ -780,7 +784,6 @@ void populateSymbolTableID(TreeNode* root)
 
 
 				//exit scope
-				currentScopeNode = currentScopeNode->parent;
 
 				//recursively add N9
 				populateSymbolTableID(root->childListEnd);
@@ -797,18 +800,11 @@ void populateSymbolTableID(TreeNode* root)
 					;
 				else
 				{
-				//increase scope if not epsilon
-					current_scope = current_scope + 1;
-					scopeNode* newNode = newScopeNode(current_scope, 1, 0);
-					addChildScope(currentScopeNode, newNode);
-					currentScopeNode = newNode;
 
 				//recursively for statements
 					populateSymbolTableID(root->childListStart->siblingNext->siblingNext->siblingNext);
 
 				//exit scope
-				currentScopeNode = currentScopeNode->parent;
-
 				//recursively add N9
 				populateSymbolTableID(root->childListEnd);
 
@@ -826,17 +822,9 @@ void populateSymbolTableID(TreeNode* root)
 					;
 				else
 				{
-				//increase scope if not epsilon
-					current_scope = current_scope + 1;
-					scopeNode* newNode = newScopeNode(current_scope, 1, 0);
-					addChildScope(currentScopeNode, newNode);
-					currentScopeNode = newNode;
 
 				//recursively for statements
 					populateSymbolTableID(root->childListStart->siblingNext->siblingNext);
-
-				//exit scope
-				currentScopeNode = currentScopeNode->parent;
 				}
 				
 				break;

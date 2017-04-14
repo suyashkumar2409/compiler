@@ -34,7 +34,12 @@ switch(c)
 	start
 		case TRUE:
 			b:=100;
-
+			declare i:integer;
+			for(i in 1..10)
+			start
+				print(i);
+				declare i:integer;
+			end
 			print(sex);
 			break;
 		case FALSE:
