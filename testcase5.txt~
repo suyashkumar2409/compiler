@@ -9,10 +9,13 @@ start
 	start
 		case TRUE:
 			b:=100;
-			break;
+
 			print(sex);
+			break;
 		case FALSE:
 			b:= -100;
 			break;
 	end
+	declare sex:real;
+	sex:= c;
 end

@@ -93,34 +93,6 @@ idFunction createNewDefinitionFunction(argument* ip, argument* op)
 	return newFunc;
 }
 
-// idNode* createNewIDNode(char* ID, int scope, int lineNo, int isVar, int isDeclared)
-// {
-// 	idNode* newNode = (idNode*)malloc(sizeof(idNode));
-
-// 	strcpy(newNode->ID, ID);
-// 	newNode->scope = scope;
-// 	newNode->lineNo = lineNo;
-
-
-// 	if(isVar)
-// 	{
-// 		// do for variables
-// 	}
-// 	else
-// 	{
-// 		if(isDeclared)
-// 		{
-// 			idFunction newFunction = createNewDeclaredFunction();
-// 			newNode->fun = newFunction;
-// 		}
-// 		else
-// 		{
-// 			// do for defined functions
-// 		}
-// 	}
-
-// 	return newNode;
-// }
 idNode* createNewFunctionDefinition(char* ID, int scope, int lineNo, argument* inputList, argument* outputList)
 {
 	idNode* newNode = (idNode*)malloc(sizeof(idNode));
@@ -224,87 +196,7 @@ argument * analyseIO(TreeNode* list)
 	return analyseInput(list);
 }
 
-// void populateSymbolTableFunction(TreeNode* root)
-// {
-// 	if(root!=NULL)
-// 	{
-// 		switch(root->allenum)
-// 		{
-// 			//Function Declaration
-// 			case nt_moduleDeclaration:
-				
-// 				//get name
-// 				char funcName[10];
-
-// 				TreeNode* funcIdNode = root->childListStart->siblingNext->siblingNext;
-
-// 				strcpy(funcName, funcIdNode->tokenInfo.identifier);
-				
-// 				//get scope
-// 				int scope = current_scope;
-
-// 				//get linenumber
-// 				int lineNo = funcIdNode->tokenInfo.lineNo;
-
-// 				//get symbol table node
-// 				idNode* newSymbolNode = createNewFunctionDeclaration(funcName, scope,lineNo, 0, 1);
-				
-// // ************* SEMANTIC ANALYSIS - CHECK WHETHER THIS DECLARATION IS ALREADY PRESENT 
-// 				insert(symbolFunction, newSymbolNode);
-
-
-
-// 				break;
-
-// 			case nt_module: //********** IMPORTANT - ID names integrity has not been checked(same arguments), do in ID analysis
-
-
-// 				//get name
-// 				char funcName[10];
-
-// 				TreeNode* funcIdNode = root->childListStart->siblingNext->siblingNext;
-
-// 				strcpy(funcName, funcIdNode->tokenInfo.identifier);
-
-
-// 				//get scope
-// 				int scope = current_scope;
-
-// 				//get linenumber
-// 				int lineNo = funcIdNode->tokenInfo.lineNo;
-
-// 				//analyses input_plist
-// 				argument* inputArgument = analyseIO(funcIdNode->siblingNext->siblingNext->siblingNext->siblingNext->siblingNext);
-				
-// 				TreeNode* ret = root->childListEnd->siblingPrev;
-
-// 				argument* outputArgument = analyseIO(ret->childListStart->siblingNext->siblingNext);
-
-// 				idNode* newSymbolNode = createNewFunctionDefinition(funcName, scope, lineNo, inputArgument, outputArgument);
-
-// // ************** SEMANTIC ANALYSIS - CHECK WHETHER THIS DEFINITION IS ALREADY PRESENT 
-// 				insert(symbolFunction, newSymbolNode);
-
-// 				//for moduleDef
-// 				// populateSymbolTable(root->childListEnd);
-// 				break;
-
-// 			// ******* Add case for moduledef and check for function invocations
-
-// 		}
-
-// 		TreeNode* ptr = root->childListStart;
-
-// // should this really be global instead of default?
-// 		while(ptr!=NULL)
-// 		{
-// 			populateSymbolTable(ptr);
-// 			ptr = ptr->siblingNext;
-// 		}
-// 	}
-// }
-
-int checkIdInScope(idNode** hashtable, char * identifier, scopeNode* currentScopeNode)
+idNode* checkIdInScope(idNode** hashtable, char * identifier, scopeNode* currentScopeNode)
 {
 	while(currentScopeNode!=NULL)
 	{
@@ -312,7 +204,7 @@ int checkIdInScope(idNode** hashtable, char * identifier, scopeNode* currentScop
 
 		if(getVal != NULL)
 		{
-			return 1;
+			return getVal;
 		}
 		else
 		{
@@ -320,7 +212,7 @@ int checkIdInScope(idNode** hashtable, char * identifier, scopeNode* currentScop
 		}
 	}
 
-	return 0;
+	return NULL;
 }
 
 int checkExistenceIDLIST(idNode** hashtable, TreeNode* list, int scope)
@@ -435,13 +327,144 @@ void insertIDLISTHash(idNode** hashtable,TreeNode* list,TreeNode* datatype, int 
 	}
 }	
 
+void checkAndAdd(idNode** hashtable, TreeNode* id, TreeNode* datatype, int scope)
+{
+	if(checkIdInScope(hashtable, id->tokenInfo.identifier, scope) != NULL)
+		printf("Error at line %d: %s input parameter is being redefined\n",id->tokenInfo.lineNo, id->tokenInfo.identifier);
+	else
+	{
+		idNode* newNode = createNewIDVar(id->tokenInfo.identifier, int scope, id->tokenInfo.lineNo, datatype->allenum);
+		insert(hashTable, newNode, hashFunctionSize);		
+	}
+}
+
+void checkAndAddInputList(idNode** symbolId,TreeNode* ipList, int scope)
+{
+	TreeNode* ptr = ipList->childListStart;
+
+	checkAndAdd(symbolId, ptr, ptr->siblingNext->siblingNext, scope);
+
+	ptr = ipList->childListEnd;
+	while(ptr->childListStart->allenum != EPSILON)
+	{
+		checkAndAdd(symbolId, ptr->childListStart->siblingNext, ptr->childListStart->siblingNext->siblingNext->siblingNext,  scope);		
+		ptr = ptr->childListEnd;
+	}
+}
+
+void checkOPID(idNode** hashtable, TreeNode* id, int scope)
+{
+	if(checkIdInScope(hashtable, id->tokenInfo.identifier, scope) == NULL)
+		printf("Error at line %d: %s output parameter has not been defined\n",id->tokenInfo.lineNo, id->tokenInfo.identifier);
+}
+
+void checkOutputParameters(idNode** hashtable, TreeNode* list, int scope)
+{
+	TreeNode* ptr = list->childListStart;
+
+	checkOPID(hashtable, ptr, scope);
+
+	ptr = list->childListEnd;
+	while(ptr->childListStart->allenum != EPSILON)
+	{
+		checkOPID(hashtable, ptr->childListStart->siblingNext, scope);
+		ptr = ptr->childListEnd;
+	}
+}
+
+
 void populateSymbolTableID(TreeNode* root)
 {
+
 	if(root!=NULL)
+
 	{
 		// printf("%s\n",TerminalsAndNonTerminalsList[root->allenum]);
 		switch(root->allenum)
 		{
+			// Function Declaration
+			case nt_moduleDeclaration:
+				
+				//get name
+
+				char funcName[8];
+
+				TreeNode* funcIdNode = root->childListStart->siblingNext->siblingNext;
+
+				strcpy(funcName, funcIdNode->tokenInfo.identifier);
+				
+				//get scope
+				int scope = current_scope;
+
+				//get linenumber
+				int lineNo = funcIdNode->tokenInfo.lineNo;
+
+				//get symbol table node
+				idNode* newSymbolNode = createNewFunctionDeclaration(funcName, scope,lineNo);
+				
+// ************* SEMANTIC ANALYSIS - CHECK WHETHER THIS DECLARATION IS ALREADY PRESENT 
+				insert(symbolFunction, newSymbolNode);
+
+
+
+				break;
+
+			case nt_module: //********** IMPORTANT - ID names integrity has not been checked(same arguments), do in ID analysis
+
+
+				//get name
+				char funcName[8];
+
+				TreeNode* funcIdNode = root->childListStart->siblingNext->siblingNext;
+
+				strcpy(funcName, funcIdNode->tokenInfo.identifier);
+
+
+				//get scope
+				int scope = current_scope;
+
+				//get linenumber
+				int lineNo = funcIdNode->tokenInfo.lineNo;
+
+				//analyses input_plist
+				argument* inputArgument = analyseIO(funcIdNode->siblingNext->siblingNext->siblingNext->siblingNext->siblingNext);
+				
+				TreeNode* ret = root->childListEnd->siblingPrev;
+
+				argument* outputArgument = analyseIO(ret->childListStart->siblingNext->siblingNext);
+
+				idNode* newSymbolNode = createNewFunctionDefinition(funcName, scope, lineNo, inputArgument, outputArgument);
+
+// ************** SEMANTIC ANALYSIS - CHECK WHETHER THIS DEFINITION IS ALREADY PRESENT or if already has been declared
+				//1. Check if definition is already there, if yes - throw error
+				//2. insert input list into current scope + 1 (without incrementing scope - this is essential)
+				//3. recursively analyse def
+				//4. check output params
+
+				TreeNode* idVal = root->childListStart->siblingNext->siblingNext;
+				if(checkIdInScope(symbolFunction, idVal->tokenInfo.identifier, currentScopeNode)!=NULL)
+					printf("Error at line %d: %s function is being redefined\n",idVal->tokenInfo.lineNo, idVal->tokenInfo.identifier );
+
+				checkAndAddInputList(symbolId, idVal->siblingNext->siblingNext->siblingNext->siblingNext->siblingNext, current_scope + 1);
+
+				populateSymbolTableID(root->childListEnd);
+
+				TreeNode* ret = root->childListEnd->prev;
+				if(ret->childListStart->allenum != EPSILON)
+				{
+					//current scope + 1 because these are defined in the function def
+					checkOutputParameters(ret->childListStart->siblingNext->siblingNext, current_scope + 1);
+				}
+
+				break;
+
+// 			// ******* Add case for moduledef and check for function invocations
+
+
+
+
+
+			/***************** ID Related Symbol Table Operations *****************/
 			case nt_moduleDef:
 				{
 				//increase scope, set not in loop or switch
@@ -471,7 +494,7 @@ void populateSymbolTableID(TreeNode* root)
 				{
 					TreeNode* idVal = root->childListStart->siblingNext->siblingNext;
 					
-					if(!checkIdInScope(symbolId, idVal->tokenInfo.identifier, currentScopeNode))
+					if(checkIdInScope(symbolId, idVal->tokenInfo.identifier, currentScopeNode)!=NULL)
 						printf("Error at line %d: %s is not in scope\n",idVal->tokenInfo.lineNo, idVal->tokenInfo.identifier );
 				
 				}
@@ -493,7 +516,7 @@ void populateSymbolTableID(TreeNode* root)
 				{
 				//check ID
 				TreeNode* firstChild = root->childListStart;
-				if(!checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode))
+				if(checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode)!=NULL)
 					printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo.lineNo, firstChild->tokenInfo.identifier );
 
 				//recursively run which stmt				
@@ -530,7 +553,7 @@ void populateSymbolTableID(TreeNode* root)
 				else
 				//check ID
 				{
-					if(!checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode))
+					if(checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode)!=NULL)
 						printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo.lineNo, firstChild->tokenInfo.identifier );
 					
 				}
@@ -561,7 +584,7 @@ void populateSymbolTableID(TreeNode* root)
 				//if ID, check
 				{
 					TreeNode* firstChild = root->childListStart;
-					if(!checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode))
+					if(checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode)!=NULL)
 						printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo.lineNo, firstChild->tokenInfo.identifier );
 					
 					populateSymbolTableID(firstChild->siblingNext);
@@ -582,7 +605,7 @@ void populateSymbolTableID(TreeNode* root)
 				// if sqbo check id
 				{
 					firstChild = firstChild->siblingNext;
-					if(!checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode))
+					if(checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode)!=NULL)
 						printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo.lineNo, firstChild->tokenInfo.identifier );
 				}
 				break;
@@ -601,8 +624,8 @@ void populateSymbolTableID(TreeNode* root)
 				//check ID
 				firstChild = firstChild->siblingNext->siblingNext->siblingNext;
 
-				if(!checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode))
-					printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo.lineNo, firstChild->tokenInfo.identifier );
+				if(checkIdInScope(symbolFunction, firstChild->tokenInfo.identifier, currentScopeNode)!=NULL)
+					printf("Error at line %d: %s function has not been defined\n",firstChild->tokenInfo.lineNo, firstChild->tokenInfo.identifier );
 				
 				//recursively add IDLIST
 
@@ -638,7 +661,7 @@ void populateSymbolTableID(TreeNode* root)
 
 				//check ID
 				TreeNode* firstChild = root->childListStart;
-				if(!checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode))
+				if(checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode)!=NULL)
 					printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo.lineNo, firstChild->tokenInfo.identifier );
 
 				//recursively add N3				
@@ -660,7 +683,7 @@ void populateSymbolTableID(TreeNode* root)
 				//else check ID recursively add N3
 				{
 					firstChild = firstChild->siblingNext;
-					if(!checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode))
+					if(checkIdInScope(symbolId, firstChild->tokenInfo.identifier, currentScopeNode)!=NULL)
 						printf("Error at line %d: %s is not in scope\n",firstChild->tokenInfo.lineNo, firstChild->tokenInfo.identifier );
 
 					//recursively add N3				
@@ -695,7 +718,7 @@ void populateSymbolTableID(TreeNode* root)
 				{
 				// check ID in switch
 				TreeNode* idVal = root->childListStart->siblingNext->siblingNext;
-				if(!checkIdInScope(symbolId, idVal->tokenInfo.identifier, currentScopeNode))
+				if(checkIdInScope(symbolId, idVal->tokenInfo.identifier, currentScopeNode)!=NULL)
 					printf("Error at line %d: %s is not in scope\n",idVal->tokenInfo.lineNo, idVal->tokenInfo.identifier );
 					
 				//recursively analyse case statements 

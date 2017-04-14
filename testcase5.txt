@@ -16,4 +16,6 @@ start
 			b:= -100;
 			break;
 	end
+	declare sex:real;
+	sex:= c;
 end
