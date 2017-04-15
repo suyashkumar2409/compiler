@@ -236,36 +236,6 @@ idNode* checkIdInScope(idNode** hashtable, char * identifier, scopeNode* current
 	return NULL;
 }
 
-int checkExistenceIDLIST(idNode** hashtable, TreeNode* list, int scope)
-{
-	TreeNode* first = list->childListStart;
-	TreeNode* n3  = list->childListEnd;
-
-	int allCorrect = 1;
-
-	idNode* temp = retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize);
-
-	if(temp != NULL)
-	{
-		allCorrect = 0;
-		printf("Error at line %d: %s has been redeclared, originally defined at line %d:\n",first->tokenInfo.lineNo, first->tokenInfo.identifier, temp->lineNo);
-	}
-
-	while(n3->childListStart->allenum != EPSILON)
-	{
-		first = n3->childListStart->siblingNext;
-
-		temp = retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize);
-		if(temp != NULL)
-		{
-			allCorrect = 0;
-			printf("Error at line %d: %s has been redeclared, originally defined at line %d:\n",first->tokenInfo.lineNo, first->tokenInfo.identifier, temp->lineNo);
-		}
-		n3 = n3->childListEnd;
-	}
-
-	return allCorrect;
-}
 
 idNode* createNewIDVar(char * identifier,scopeNode* currScope , int lineNo, allEnum datatype)
 {
@@ -394,6 +364,53 @@ void insertSingleIDHash(idNode** hashtable,TreeNode* id,TreeNode* datatype, scop
 		startOfHash = endOfHash;
 }
 
+
+// insertSingleIDHash(idNode** hashtable,TreeNode* id,TreeNode* datatype, scopeNode* currScope)
+
+int checkExistenceIDLIST(idNode** hashtable, TreeNode* list, int scope)
+{
+	TreeNode* first = list->childListStart;
+	TreeNode* n3  = list->childListEnd;
+
+	TreeNode* datatype = list->siblingNext->siblingNext;
+	scopeNode* currScope = currentScopeNode;
+
+	int allCorrect = 1;
+
+	idNode* temp = retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize);
+
+	if(temp != NULL)
+	{
+		allCorrect = 0;
+		printf("Error at line %d: %s has been redeclared, originally defined at line %d:\n",first->tokenInfo.lineNo, first->tokenInfo.identifier, temp->lineNo);
+	}
+	else
+	{
+		insertSingleIDHash(hashtable, first, datatype, currScope);
+	}
+
+	while(n3->childListStart->allenum != EPSILON)
+	{
+		first = n3->childListStart->siblingNext;
+
+		temp = retrieve(hashtable, first->tokenInfo.identifier, scope, hashFunctionSize);
+		if(temp != NULL)
+		{
+			allCorrect = 0;
+			printf("Error at line %d: %s has been redeclared, originally defined at line %d:\n",first->tokenInfo.lineNo, first->tokenInfo.identifier, temp->lineNo);
+		}
+		else
+		{
+			insertSingleIDHash(hashtable, first, datatype, currScope);
+		}
+		n3 = n3->childListEnd;
+	}
+
+	return allCorrect;
+}
+
+
+
 // for each ID in idList, insert in hashtable using datatype - handle both arrays and normal nums (is bound checking done?)
 void insertIDLISTHash(idNode** hashtable,TreeNode* list,TreeNode* datatype, scopeNode* currScope)
 {
@@ -411,14 +428,25 @@ void insertIDLISTHash(idNode** hashtable,TreeNode* list,TreeNode* datatype, scop
 	}
 }	
 
+
 void checkAndAdd(idNode** hashtable, TreeNode* id, TreeNode* datatype, scopeNode* currScope)
 {
 	if(checkIdInScope(hashtable, id->tokenInfo.identifier, currentScopeNode) != NULL)
 		printf("Error at line %d: %s input parameter is being redefined\n",id->tokenInfo.lineNo, id->tokenInfo.identifier);
 	else
 	{
-		idNode* newNode = createNewIDVar(id->tokenInfo.identifier, currScope, id->tokenInfo.lineNo, datatype->childListStart->allenum);
-		endOfHash = insert2(symbolId , newNode, hashFunctionSize, endOfHash);		
+		if(datatype->childListStart->allenum == ARRAY)
+		{
+			idNode* newNode = createNewIDArray(id->tokenInfo.identifier, currScope, id->tokenInfo.lineNo, datatype);
+			endOfHash = insert2(symbolId , newNode, hashFunctionSize, endOfHash);			
+		}
+		else
+		{
+			idNode* newNode = createNewIDVar(id->tokenInfo.identifier, currScope, id->tokenInfo.lineNo, datatype->childListStart->allenum);
+			endOfHash = insert2(symbolId , newNode, hashFunctionSize, endOfHash);			
+		}
+
+
 		if(startOfHash == NULL)
 			startOfHash = endOfHash;
 	}
@@ -475,6 +503,8 @@ void populateSymbolTableID(TreeNode* root)
 				scopeNode* newNode = newScopeNode(current_scope, 0, 0, root->tokenInfo.lineNo);
 				newNode->scopeEnd = root->parent->childListEnd->tokenInfo.lineNo;
 
+				printf("LINE NO IS : %d\n",currentScopeNode->scopeEnd);
+				printf("%s\n",TerminalsAndNonTerminalsList[root->parent->allenum]);
 				addChildScope(currentScopeNode, newNode);
 				currentScopeNode = newNode;
 				break;
@@ -482,9 +512,8 @@ void populateSymbolTableID(TreeNode* root)
 
 			case END:
 			{
-				currentScopeNode->scopeEnd = root->tokenInfo.lineNo;
+				// currentScopeNode->scopeEnd = root->tokenInfo.lineNo;
 
-				printf("LINE NO IS : %d\n",currentScopeNode->scopeEnd);
 				currentScopeNode = currentScopeNode->parent;
 
 				break;
@@ -601,7 +630,6 @@ void populateSymbolTableID(TreeNode* root)
 
 				if(ret->childListStart->allenum != EPSILON)
 				{
-					//current scope + 1 because these are defined in the function def
 					checkAndAddInputList(symbolId, ret->childListStart->siblingNext->siblingNext, currentScopeNode);
 				}
 
@@ -848,10 +876,11 @@ void populateSymbolTableID(TreeNode* root)
 				firstChild = firstChild->siblingNext;
 
 				if(checkExistenceIDLIST(symbolId, firstChild, currentScopeNode->scope))  //check only in current scope
-				{
-				// for each ID in idList, insert in hashtable using datatype - handle both arrays and normal nums (is bound checking done?)
-					insertIDLISTHash(symbolId, firstChild, firstChild->siblingNext->siblingNext, currentScopeNode);					
-				}
+				;
+				// {
+				// // for each ID in idList, insert in hashtable using datatype - handle both arrays and normal nums (is bound checking done?)
+				// 	insertIDLISTHash(symbolId, firstChild, firstChild->siblingNext->siblingNext, currentScopeNode);					
+				// }
 
 				break;
 				}
@@ -1065,7 +1094,7 @@ void printSymbolTable(TreeNode* root)
 
 int main()
 {
-	mainOfLexer("testcase3.txt");
+	mainOfLexer("t1.txt");
 	parsing();
 
 	//  FILE* fopenParseTree;
