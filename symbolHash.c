@@ -55,6 +55,8 @@ idNode* insert(idNode** hashTable, idNode* id, int size)
 		id->prev = hashTable[hash];
 	}
 
+	id->valueAssigned = 0;
+
 }
 
 idNode* insert2(idNode** hashTable, idNode* id, int size, idNode* endOfHash)

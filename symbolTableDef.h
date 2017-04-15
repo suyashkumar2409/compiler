@@ -85,6 +85,8 @@ struct idNodeStruct
 	int nesting;
 	int offset;
 
+	int valueAssigned;
+
 	int isVar;
 	idVar var;
 	idFunction fun;	
