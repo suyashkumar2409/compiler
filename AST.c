@@ -50,6 +50,8 @@ typedef struct treenode{
 	struct treenode* parent;
 
 	struct treenode* next;
+
+	idNode* entry;
 } TreeNode;
 
 void copy(TreeNode* a, TreeNode* b)

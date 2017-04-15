@@ -362,6 +362,9 @@ void insertSingleIDHash(idNode** hashtable,TreeNode* id,TreeNode* datatype, scop
 	endOfHash = insert2(hashtable, newIdNode, hashFunctionSize, endOfHash);	
 	if(startOfHash==NULL)
 		startOfHash = endOfHash;
+
+
+	id->entry = newIdNode;
 }
 
 
@@ -435,20 +438,23 @@ void checkAndAdd(idNode** hashtable, TreeNode* id, TreeNode* datatype, scopeNode
 		printf("Error at line %d: %s input parameter is being redefined\n",id->tokenInfo.lineNo, id->tokenInfo.identifier);
 	else
 	{
+		idNode* newNode;
 		if(datatype->childListStart->allenum == ARRAY)
 		{
-			idNode* newNode = createNewIDArray(id->tokenInfo.identifier, currScope, id->tokenInfo.lineNo, datatype);
+			newNode = createNewIDArray(id->tokenInfo.identifier, currScope, id->tokenInfo.lineNo, datatype);
 			endOfHash = insert2(symbolId , newNode, hashFunctionSize, endOfHash);			
 		}
 		else
 		{
-			idNode* newNode = createNewIDVar(id->tokenInfo.identifier, currScope, id->tokenInfo.lineNo, datatype->childListStart->allenum);
+			newNode = createNewIDVar(id->tokenInfo.identifier, currScope, id->tokenInfo.lineNo, datatype->childListStart->allenum);
 			endOfHash = insert2(symbolId , newNode, hashFunctionSize, endOfHash);			
 		}
 
 
 		if(startOfHash == NULL)
 			startOfHash = endOfHash;
+
+		id->entry = newNode;
 	}
 }
 
@@ -544,10 +550,14 @@ void populateSymbolTableID(TreeNode* root)
 				newSymbolNode->fun.isDefined = 1;
 				newSymbolNode->fun.isUsed = 0;
 				
-// ************* SEMANTIC ANALYSIS - CHECK WHETHER THIS DECLARATION IS ALREADY PRESENT 
-				insert(symbolFunction, newSymbolNode, hashFunctionSize);
+// ************* SEMANTIC ANALYSIS - CHECK WHETHER THIS DECLARATION IS ALREADY PRESENT
 
+				if(checkIdInScope(symbolFunction, funcName, currentScopeNode)==NULL)
+					printf("Error at line %d: Redeclaration of function %s\n",lineNo, funcName );
+				else
+					insert(symbolFunction, newSymbolNode, hashFunctionSize);
 
+				root->childListStart->siblingNext->siblingNext->entry = newSymbolNode;
 
 				break;
 
@@ -614,6 +624,8 @@ void populateSymbolTableID(TreeNode* root)
 					newSymbolNode->fun.isDeclared = 1;
 					insert(symbolFunction, newSymbolNode, hashFunctionSize);
 				}
+
+				root->childListStart->siblingNext->siblingNext->entry = newSymbolNode;
 
 
 				current_scope = current_scope + 1;
@@ -1094,7 +1106,7 @@ void printSymbolTable(TreeNode* root)
 
 int main()
 {
-	mainOfLexer("t1.txt");
+	mainOfLexer("testcase1.txt");
 	parsing();
 
 	//  FILE* fopenParseTree;
