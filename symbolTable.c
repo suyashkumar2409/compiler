@@ -1116,23 +1116,3 @@ void printSymbolTable(TreeNode* root)
 
 	}
 }
-
-int main()
-{
-	mainOfLexer("t1.txt");
-	parsing();
-
-	//  FILE* fopenParseTree;
-	// fopenParseTree = fopen("outfile.txt", "w+");
-	// printInorder(parserTree, fopenParseTree);
-	mainOfSymbolTable();
-	printf("\n");
-	printSymbolTable(parserTree);
-
-	// idNode* temp = retrieve(symbolId, "bak", 1, hashFunctionSize);
-
-	// if(temp==NULL)
-	// 	printf("found");
-	// else
-	// 	printf("not found");
-}
