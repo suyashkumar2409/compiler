@@ -2,6 +2,8 @@
 #define hashIdSize 1017
 #define hashFunctionSize 1017
 
+//There exist some cases where pointers to symbol Table are not present
+
 //convert single big symbol table to hierarchial table
 //no need to do above, just add scope into search function
 idNode** symbolId;
@@ -365,8 +367,11 @@ void insertSingleIDHash(idNode** hashtable,TreeNode* id,TreeNode* datatype, scop
 	if(startOfHash==NULL)
 		startOfHash = endOfHash;
 
+	printf("%s\n",id->tokenInfo.identifier);
 
 	id->entry = newIdNode;
+	if(id->entry==NULL)
+		printf("SEXEXS");	
 }
 
 
@@ -511,8 +516,8 @@ void populateSymbolTableID(TreeNode* root)
 				scopeNode* newNode = newScopeNode(current_scope, 0, 0, root->tokenInfo.lineNo);
 				newNode->scopeEnd = root->parent->childListEnd->tokenInfo.lineNo;
 
-				printf("LINE NO IS : %d\n",currentScopeNode->scopeEnd);
-				printf("%s\n",TerminalsAndNonTerminalsList[root->parent->allenum]);
+				// printf("LINE NO IS : %d\n",currentScopeNode->scopeEnd);
+				// printf("%s\n",TerminalsAndNonTerminalsList[root->parent->allenum]);
 				addChildScope(currentScopeNode, newNode);
 				currentScopeNode = newNode;
 				break;
@@ -554,7 +559,7 @@ void populateSymbolTableID(TreeNode* root)
 				
 // ************* SEMANTIC ANALYSIS - CHECK WHETHER THIS DECLARATION IS ALREADY PRESENT
 
-				if(checkIdInScope(symbolFunction, funcName, currentScopeNode, 0)==NULL)
+				if(checkIdInScope(symbolFunction, funcName, currentScopeNode, 0)!=NULL)
 					printf("Error at line %d: Redeclaration of function %s\n",lineNo, funcName );
 				else
 					insert(symbolFunction, newSymbolNode, hashFunctionSize);
@@ -1059,6 +1064,8 @@ void populateSymbolTableID(TreeNode* root)
 
 void mainOfSymbolTable()
 {
+	printf("HI\n");
+
 	createHashTables();
 	createScopeTree();
 
@@ -1116,3 +1123,17 @@ void printSymbolTable(TreeNode* root)
 
 	}
 }
+
+// int main()
+// {
+// 	mainOfLexer("testcase3.txt");
+// 	parsing();
+// 	mainOfSymbolTable();
+// 	// printf("Symbol Table Done\n");
+// 	// mainOfASTcreate();
+// 	// printf("AST creation Done\n");
+// 	 // preOrder(parserTree);
+
+// 	// mainOfSemanticAnalysis();
+// 	// printSymbolTable(parserTree);
+// }

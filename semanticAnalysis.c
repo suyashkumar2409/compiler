@@ -62,6 +62,7 @@ void semanticAnalysis(TreeNode* root)
 {
 	if(root!=NULL)
 	{
+		// printf("%s\n",TerminalsAndNonTerminalsList[root->allenum]);
 		switch(root->allenum)
 		{
 			//DONT FORGET THAT U ARE USING REDUCED AST NOT PARSE TREE
@@ -72,22 +73,26 @@ void semanticAnalysis(TreeNode* root)
 				{
 					TreeNode* outputList = root->childListStart;
 					idNode* idEnt = outputList->childListStart->entry;
-					if(idEnt->valueAssigned == 0)
+					
+					if(idEnt != NULL)
 					{
-						printf("Error at line %d: return variable %s has not been assigned a value\n",idEnt->lineNo, idEnt->ID);
-					}
-
-					TreeNode * temp = outputList->childListEnd;
-					while(temp->childListStart != NULL)
-					{
-						idEnt = temp->childListStart->entry;
-
 						if(idEnt->valueAssigned == 0)
 						{
 							printf("Error at line %d: return variable %s has not been assigned a value\n",idEnt->lineNo, idEnt->ID);
 						}
-						
-						temp = temp->childListEnd;
+
+						TreeNode * temp = outputList->childListEnd;
+						while(temp->childListStart != NULL)
+						{
+							idEnt = temp->childListStart->entry;
+
+							if(idEnt->valueAssigned == 0)
+							{
+								printf("Error at line %d: return variable %s has not been assigned a value\n",idEnt->lineNo, idEnt->ID);
+							}
+							
+							temp = temp->childListEnd;
+						}
 					}
 				}
 				break;
@@ -107,95 +112,108 @@ void semanticAnalysis(TreeNode* root)
 				//compare expected output list with values
 				TreeNode* optional = root->childListStart;
 				idNode* idEnt = root->childListStart->siblingNext->entry; // ID
-				if(optional->childListStart == NULL)
-				{
-					if(idEnt->fun.outputArgument!=NULL)
-					{
-						printf("Error at line %d: invoked function %s's output parameters don't match with definition\n",idEnt->lineNo, idEnt->ID);
-					}
-				}
-				else
-				{
-					compareIDListWithExpected(optional->childListStart, idEnt->fun.outputArgument,idEnt->lineNo, idEnt->ID);
-				}
-				//compare expected input list with assigned idList
 
-				compareIDListWithExpected(root->childListEnd, idEnt->fun.inputArgument,idEnt->lineNo, idEnt->ID);
+				if(idEnt != NULL)
+				{
+
+					if(optional->childListStart == NULL)
+					{
+						if(idEnt->fun.outputArgument!=NULL)
+						{
+							printf("Error at line %d: invoked function %s's output parameters don't match with definition\n",idEnt->lineNo, idEnt->ID);
+						}
+					}
+					else
+					{
+						compareIDListWithExpected(optional->childListStart, idEnt->fun.outputArgument,idEnt->lineNo, idEnt->ID);
+					}
+					//compare expected input list with assigned idList
+
+					compareIDListWithExpected(root->childListEnd, idEnt->fun.inputArgument,idEnt->lineNo, idEnt->ID);
+				}
 				break;
 			}
 			case nt_conditionalStmt:
 			{
+				printf("coming\n");
 				allEnum type;
 				idNode* idEnt = root->childListStart->entry;
 
-				if(idEnt->var.isVariable)
+				if(idEnt != NULL)
 				{
-					switch(idEnt->var.variable.type)
+
+					if(idEnt->var.isVariable)
 					{
-						case INTEGER:
-							break;
-						case REAL:
-							printf("Error at line %d: variable %s is of type REAL, can't used as argument in switch statement\n",idEnt->lineNo, idEnt->ID);
-							break;
-						case BOOLEAN:
-							if(root->childListEnd->childListStart!=NULL)
-							{
-								printf("Error at line %d: Default cannot be used when switch argument is Boolean\n",root->childListEnd->childListStart->tokenInfo.lineNo);
-							}
-							break;
-					}
-				//If ID is of type boolean - ensure default does not occur
-				//If ID is of type real - it is an error
-
-				//recursively take each case statement and check type
-
-					allEnum switchType = idEnt->var.variable.type;
-					TreeNode* caseStmt = root->childListStart->siblingNext;
-
-					while(caseStmt->childListStart!=NULL)
-					{
-						TreeNode* value = caseStmt->childListStart;
-
-						switch(value->childListStart->tokenInfo.allenum)
+						switch(idEnt->var.variable.type)
 						{
-							case NUM:
+							case INTEGER:
+								break;
+							case REAL:
+								printf("Error at line %d: variable %s is of type REAL, can't used as argument in switch statement\n",idEnt->lineNo, idEnt->ID);
+								break;
+							case BOOLEAN:
+								if(root->childListEnd->childListStart!=NULL)
 								{
-									switch(switchType)
-									{
-										case INTEGER:
-											break;
-										case REAL:
-										case BOOLEAN:
-											printf("Error at line %d: type of case does not match with type of switch\n",value->childListStart->tokenInfo.lineNo);
-											break;
-									}
-									break;
+									printf("Error at line %d: Default cannot be used when switch argument is Boolean\n",root->childListEnd->childListStart->tokenInfo.lineNo);
 								}
-							case TRUE:
-							case FALSE:
-								{
-									switch(switchType)
+								break;
+						}
+					//If ID is of type boolean - ensure default does not occur
+					//If ID is of type real - it is an error
+
+					//recursively take each case statement and check type
+
+						allEnum switchType = idEnt->var.variable.type;
+						TreeNode* caseStmt = root->childListStart->siblingNext;
+
+						while(caseStmt->childListStart!=NULL)
+						{
+							TreeNode* value = caseStmt->childListStart;
+
+							switch(value->childListStart->tokenInfo.allenum)
+							{
+								case NUM:
 									{
-										case INTEGER:
-										case REAL:
-											printf("Error at line %d: type of case does not match with type of switch\n",value->childListStart->tokenInfo.lineNo);
-											break;
-										case BOOLEAN:
-											break;
+										switch(switchType)
+										{
+											case INTEGER:
+												break;
+											case REAL:
+											case BOOLEAN:
+												printf("Error at line %d: type of case does not match with type of switch\n",value->childListStart->tokenInfo.lineNo);
+												break;
+										}
+										break;
 									}
-									break;
-								}
+								case TRUE:
+								case FALSE:
+									{
+										switch(switchType)
+										{
+											case INTEGER:
+											case REAL:
+												printf("Error at line %d: type of case does not match with type of switch\n",value->childListStart->tokenInfo.lineNo);
+												break;
+											case BOOLEAN:
+												break;
+										}
+										break;
+									}
+							}
+
+							caseStmt = caseStmt->childListEnd;
 						}
 
-						caseStmt = caseStmt->childListEnd;
 					}
-
+					else
+					{
+						printf("Error at line %d: array variable %s has been used as argument in switch statement\n",idEnt->lineNo, idEnt->ID);
+					}
 				}
 				else
 				{
-					printf("Error at line %d: array variable %s has been used as argument in switch statement\n",idEnt->lineNo, idEnt->ID);
+					printf("ident isNULL\n");
 				}
-
 				break;
 			}
 
@@ -204,7 +222,7 @@ void semanticAnalysis(TreeNode* root)
 				TreeNode* ptr = root->childListStart;
 				while(ptr!=NULL)
 				{
-					populateSymbolTableID(ptr);
+					semanticAnalysis(ptr);
 					ptr = ptr->siblingNext;
 				}
 				break;
@@ -219,10 +237,14 @@ int mainOfSemanticAnalysis()
 }
 int main()
 {
-	mainOfLexer("t1.txt");
+	mainOfLexer("testcase3.txt");
 	parsing();
 	mainOfSymbolTable();
+	// printf("Symbol Table Done\n");
 	mainOfASTcreate();
+	// printf("AST creation Done\n");
+	 // preOrder(parserTree);
+
 	mainOfSemanticAnalysis();
 	// printSymbolTable(parserTree);
 }
