@@ -33,7 +33,7 @@ int getHash(char * inp, int size)
 }
 
 
-idNode* insert(idNode** hashTable, idNode* id, int size)
+idNode* insert(idNode** hashTable, idNode* id, int size, TreeNode* idTree)
 {
 	int hash = getHash(id->ID, size);
 	// printf("\n Trying to nInsert %s scope: %d",id->ID,id->scope);
@@ -57,21 +57,27 @@ idNode* insert(idNode** hashTable, idNode* id, int size)
 
 	id->valueAssigned = 0;
 
+	idTree->entry = id;
+
+
 }
 
-idNode* insert2(idNode** hashTable, idNode* id, int size, idNode* endOfHash)
+idNode* insert2(idNode** hashTable, idNode* id, int size, idNode* endOfHash, TreeNode* idTree)
 {
-	insert(hashTable, id, size);
+	insert(hashTable, id, size, idTree);
 	if(endOfHash != NULL)
 	{
 		endOfHash->nextList = id;
 	}
+
+	idTree->entry = id;
+
 	return id;
 }
 
 
 //NULL means not found
-idNode* retrieve(idNode** hashTable, char* id, int scope, int size)
+idNode* retrieve(idNode** hashTable, char* id, int scope, int size, TreeNode* idTree)
 {
 	int hash = getHash(id, size);
 	idNode* ptr = hashTable[hash]->next;
@@ -86,6 +92,11 @@ idNode* retrieve(idNode** hashTable, char* id, int scope, int size)
 			break;
 
 		ptr = ptr->next;
+	}
+
+	if(ptr!=NULL)
+	{
+		idTree->entry = ptr;
 	}
 
 	return ptr;

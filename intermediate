@@ -1,11 +1,15 @@
 declare module square;
 
 <<module square>>
-takes input [x:integer];
-returns [value:integer];
+takes input [x:integer, y:real];
 start
+use module square with parameters x,y;
 end
 
+<<module square>>
+takes input [x:integer];
+start
+end
 
 <<<driver program>>>
 start
@@ -16,13 +20,13 @@ start
 	use module square with parameters v_1_2_3;
 	print(result_);
 
-	declare sk:integer;
+	declare sk:real;
 	switch(sk)
 	start
-		case TRUE:
+		case 1:
 			print(sk);
 			break;
-		case FALSE:
+		case 2:
 			print(sk);
 			break;
 		default:

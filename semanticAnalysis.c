@@ -120,16 +120,16 @@ void semanticAnalysis(TreeNode* root)
 					{
 						if(idEnt->fun.outputArgument!=NULL)
 						{
-							printf("Error at line %d: invoked function %s's output parameters don't match with definition\n",idEnt->lineNo, idEnt->ID);
+							printf("Error at line %d: invoked function %s's output parameters don't match with definition\n",optional->siblingNext->tokenInfo.lineNo, idEnt->ID);
 						}
 					}
 					else
 					{
-						compareIDListWithExpected(optional->childListStart, idEnt->fun.outputArgument,idEnt->lineNo, idEnt->ID);
+						compareIDListWithExpected(optional->childListStart, idEnt->fun.outputArgument,optional->siblingNext->tokenInfo.lineNo, idEnt->ID);
 					}
 					//compare expected input list with assigned idList
 
-					compareIDListWithExpected(root->childListEnd, idEnt->fun.inputArgument,idEnt->lineNo, idEnt->ID);
+					compareIDListWithExpected(root->childListEnd, idEnt->fun.inputArgument,optional->siblingNext->tokenInfo.lineNo, idEnt->ID);
 				}
 				break;
 			}
@@ -147,6 +147,10 @@ void semanticAnalysis(TreeNode* root)
 						switch(idEnt->var.variable.type)
 						{
 							case INTEGER:
+								if(root->childListEnd->childListStart==NULL)
+								{
+									printf("Error at line %d: Default must be there when switch argument is integer\n",root->childListStart->tokenInfo.lineNo);
+								}
 								break;
 							case REAL:
 								printf("Error at line %d: variable %s is of type REAL, can't used as argument in switch statement\n",idEnt->lineNo, idEnt->ID);
