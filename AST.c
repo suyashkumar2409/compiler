@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "parserCorrect.c"
+#include "symbolTableDef.h"
 // #include "AST.h"
 // typedef struct treenode{
 // 	rule_node ruleNode;
@@ -31,6 +32,7 @@
 
 
 //usage- stackptr = push(stackptr)
+
 
 
 typedef struct treenode{

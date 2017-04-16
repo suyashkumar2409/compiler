@@ -816,7 +816,7 @@ void populateSymbolTableID(TreeNode* root)
 					printf("Error at line %d: %s function has not been defined\n",firstChild->tokenInfo.lineNo, firstChild->tokenInfo.identifier );
 				
 				//check if function is not recursive
-				if(strcpy(first->ID, currentScopeNode->scopeName)==0)
+				if(strcpy(firstChild->tokenInfo.identifier, currentScopeNode->scopeName)==0)
 					printf("Error at line %d: functions cannot be recursive\n",firstChild->tokenInfo.lineNo);
 
 
@@ -1119,7 +1119,7 @@ void printSymbolTable(TreeNode* root)
 
 int main()
 {
-	mainOfLexer("testcase1.txt");
+	mainOfLexer("t1.txt");
 	parsing();
 
 	//  FILE* fopenParseTree;

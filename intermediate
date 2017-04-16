@@ -1,9 +1,36 @@
+
+
+
+<<module arraySum>>
+takes input[list:array[1..15] of real, n:integer];		    
+returns  [sum:real];						    
+start
+	declare index, a, b:integer;				    
+	declare t:boolean;					    
+	declare q,r,p: array[1..10] of real;		    	    
+	declare u,v: boolean;				   	    
+	sum:=0.0;						    
+	while(sum>=12.8)					    
+        start
+declare u:integer;
+		index:= 34-20*index+x-12;			    
+		r[b] := p[index]+q[a];			            
+		r[index]:= p[index] + list[a];		            
+                list[b]:=list[a]+ 22.3; 			    
+		t:= list[a]+34.5<=40.0;      	    	            
+	end
+	declare u, v, w, z: integer;			            
+	w:= index*10+sum-list[a];				    
+	print(x_2); 						    
+end
 <<<driver program>>>
 start
-	
+	declare A:array[1..15] of real;                            
+	declare k:integer;					   
+	declare s:real;						   
+	get_value(k);
+	u1:= 23.9+s;						   
+	k := 10+12-3;					           
+	s:=k;							   
 end
-<<module empty>>
-takes input[a:boolean];
-start
 
-end

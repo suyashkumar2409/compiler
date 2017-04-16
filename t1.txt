@@ -12,6 +12,7 @@ start
 	sum:=0.0;						    **No type mismatch**
 	while(sum>=12.8)					    **No type mismatch**
         start
+declare u:integer;
 		index:= 34-20*index+x-12;			    **ERROR_V: variable x not declared **
 		r[b] := p[index]+q[a];			            **No type mismatch**
 		r[index]:= p[index] + list[a];		            **ERROR_T: type mismatch of elements belonging to two different types of arrays**

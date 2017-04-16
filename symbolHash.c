@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "symbolTableDef.h"
+#include "actualParsing.c"
 
 
 idNode** initHashFunc(int size)

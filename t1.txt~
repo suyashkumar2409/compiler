@@ -16,7 +16,7 @@ start
 		r[b] := p[index]+q[a];			            **No type mismatch**
 		r[index]:= p[index] + list[a];		            **ERROR_T: type mismatch of elements belonging to two different types of arrays**
                 list[b]:=list[a]+ 22.3; 			    **No type mismatch**
-		t:= list[a]+34.5<=40.0      	    	            **No type mismatch**
+		t:= list[a]+34.5<=40.0;      	    	            **No type mismatch**
 	end
 	declare u, v, w, z: integer;			            **ERROR_V: variables u and v are already declared **
 	w:= index*10+sum-list[a];				    **ERROR_T: type mismatch **
